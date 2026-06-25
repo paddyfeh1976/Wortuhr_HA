@@ -1,0 +1,10 @@
+{
+  "domain": "wortuhr",
+  "name": "Wortuhr",
+  "version": "1.0.0",
+  "documentation": "",
+  "config_flow": true,
+  "codeowners": [],
+  "iot_class": "local_polling",
+  "requirements": []
+}

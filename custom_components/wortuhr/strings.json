@@ -1,0 +1,20 @@
+{
+  "title": "Wortuhr",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Wortuhr einrichten",
+        "description": "Verbindung zur Wortuhr herstellen",
+        "data": {
+          "host": "IP-Adresse der Wortuhr"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Verbindung zur Wortuhr fehlgeschlagen"
+    },
+    "abort": {
+      "already_configured": "Wortuhr ist bereits konfiguriert"
+    }
+  }
+}

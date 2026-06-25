@@ -1,0 +1,55 @@
+show_text:
+  fields:
+    host:
+      example: 192.168.178.50
+    text:
+      required: true
+      example: Hallo Welt
+    color:
+      example: 1
+    buzzer:
+      example: 2
+
+show_event:
+  fields:
+    host:
+    text:
+      required: true
+    color:
+      example: 1
+    audio:
+      example: 701
+    preani:
+      example: HERZ
+    postani:
+      example: HERZ
+
+play_audio:
+  fields:
+    host:
+    soundfile:
+      required: true
+      example: 819
+    volume:
+      example: 100
+
+set_mode:
+  fields:
+    host:
+    mode:
+      required: true
+      example: 2
+    sound:
+      example: true
+
+reboot:
+  fields:
+    host:
+
+wifi_reset:
+  fields:
+    host:
+
+mp3_reset:
+  fields:
+    host:
