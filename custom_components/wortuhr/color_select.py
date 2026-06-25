@@ -47,7 +47,7 @@ class WortuhrColorSelect(SelectEntity):
         self._attr_device_info = device_info
         self._host = host
         self._attr_unique_id = f"wortuhr_message_color_select_{config_entry.entry_id}"
-        self._current = "0"
+        self._current = "Weiß"
 
     @property
     def current_option(self) -> str | None:
