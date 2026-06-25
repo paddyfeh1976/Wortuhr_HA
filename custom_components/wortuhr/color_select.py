@@ -32,7 +32,7 @@ async def async_setup_entry(
 
 class WortuhrColorSelect(SelectEntity):
     _attr_has_entity_name = True
-    _attr_name = "Farbe Nachricht"
+    _attr_name = "Nachricht Farbe"
     _attr_options = list(COLOR_OPTIONS.keys())
 
     def __init__(

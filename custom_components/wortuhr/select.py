@@ -42,7 +42,7 @@ class WortuhrModeSelect(SelectEntity):
     """Select entity to choose Wortuhr display mode."""
 
     _attr_has_entity_name = True
-    _attr_name = "Display Mode"
+    _attr_name = "Modus"
     _attr_options = list(MODE_OPTIONS.keys())
     _attr_icon = "mdi:clock-start"
 

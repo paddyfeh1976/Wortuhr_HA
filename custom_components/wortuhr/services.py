@@ -29,7 +29,7 @@ async def async_show_text(
     hass: HomeAssistant,
     host: str,
     text: str,
-    color: int = 0,
+    color: int,
     buzzer: int = 0,
 ) -> str:
     url = _build_url(

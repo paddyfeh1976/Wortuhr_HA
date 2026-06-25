@@ -8,7 +8,6 @@ from homeassistant.const import CONF_HOST
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers import entity_registry as er
-from homeassistant.const import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
@@ -33,7 +32,6 @@ class WortuhrShowMessageButton(ButtonEntity):
     _attr_has_entity_name = True
     _attr_name = "Nachricht anzeigen"
     _attr_icon = "mdi:message-text"
-    _attr_entity_category = EntityCategory.CONFIG
 
     def __init__(self, hass: HomeAssistant, config_entry: ConfigEntry, device_info: DeviceInfo, host: str) -> None:
         self.hass = hass
