@@ -9,6 +9,8 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
+from homeassistant.const import EntityCategory
+
 from .const import DOMAIN
 
 
@@ -36,6 +38,7 @@ class WortuhrMessageText(TextEntity):
 
     _attr_has_entity_name = True
     _attr_name = "Nachricht"
+    _attr_entity_category = EntityCategory.CONFIG
 
     def __init__(
         self,
@@ -49,12 +52,12 @@ class WortuhrMessageText(TextEntity):
         self._attr_device_info = device_info
         self._host = host
         self._attr_unique_id = f"wortuhr_message_text_{config_entry.entry_id}"
-        self._value: str = ""
+        self._native_value: str = ""
 
     @property
-    def value(self) -> str | None:
-        return self._value
+    def native_value(self) -> str | None:
+        return self._native_value
 
     async def async_set_value(self, value: str) -> None:
-        self._value = value
+        self._native_value = value
         self.async_write_ha_state()
