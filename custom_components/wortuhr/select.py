@@ -1,0 +1,71 @@
+"""Select platform for Wortuhr."""
+
+from __future__ import annotations
+
+from homeassistant.components.select import SelectEntity
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CONF_HOST
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.device_registry import DeviceInfo
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+
+from .const import DOMAIN, MODE_OPTIONS
+
+
+async def async_setup_entry(
+    hass: HomeAssistant,
+    config_entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+) -> None:
+    """Set up Wortuhr select entity."""
+    host = config_entry.data.get(CONF_HOST)
+
+    device_info = DeviceInfo(
+        identifiers={(DOMAIN, host)},
+        name="Wortuhr",
+        manufacturer="Wortuhr",
+        model="HTTP API",
+        configuration_url=f"http://{host}",
+    )
+
+    async_add_entities([WortuhrModeSelect(hass, config_entry, device_info, host)])
+
+
+class WortuhrModeSelect(SelectEntity):
+    """Select entity to choose Wortuhr display mode."""
+
+    _attr_has_entity_name = True
+    _attr_name = "Display Mode"
+    _attr_unique_id = "wortuhr_mode_select"
+    _attr_options = list(MODE_OPTIONS.keys())
+    _attr_icon = "mdi:clock-start"
+
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        config_entry: ConfigEntry,
+        device_info: DeviceInfo,
+        host: str,
+    ) -> None:
+        self.hass = hass
+        self.config_entry = config_entry
+        self._attr_device_info = device_info
+        self._host = host
+        self._current_option = "Zeit (Uhr)"
+
+    @property
+    def current_option(self) -> str | None:
+        return self._current_option
+
+    async def async_select_option(self, option: str) -> None:
+        if option not in MODE_OPTIONS:
+            return
+
+        mode = MODE_OPTIONS[option]
+        await self.hass.services.async_call(
+            DOMAIN,
+            "set_mode",
+            {"host": self._host, "mode": mode, "sound": False},
+        )
+        self._current_option = option
+        self.async_write_ha_state()
