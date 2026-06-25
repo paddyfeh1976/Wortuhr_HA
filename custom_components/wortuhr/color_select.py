@@ -9,9 +9,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN, COLOR_OPTIONS 
-#from .services import async_show_text
-
+from .const import DOMAIN, COLOR_OPTIONS
 
 
 async def async_setup_entry(
@@ -35,14 +33,20 @@ async def async_setup_entry(
 class WortuhrColorSelect(SelectEntity):
     _attr_has_entity_name = True
     _attr_name = "Farbe Nachricht"
-    _attr_unique_id = "wortuhr_message_color_select"
-    _attr_options = COLOR_OPTIONS
+    _attr_options = list(COLOR_OPTIONS.keys())
 
-    def __init__(self, hass: HomeAssistant, config_entry: ConfigEntry, device_info: DeviceInfo, host: str) -> None:
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        config_entry: ConfigEntry,
+        device_info: DeviceInfo,
+        host: str,
+    ) -> None:
         self.hass = hass
         self.config_entry = config_entry
         self._attr_device_info = device_info
         self._host = host
+        self._attr_unique_id = f"wortuhr_message_color_select_{config_entry.entry_id}"
         self._current = "0"
 
     @property
