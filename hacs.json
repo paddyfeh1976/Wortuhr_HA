@@ -1,0 +1,8 @@
+{
+  "name": "Wortuhr",
+  "homeassistant": "2024.1.0",
+  "documentation": "https://github.com/pfehr/Wortuhr_HA",
+  "issue_tracker": "https://github.com/pfehr/Wortuhr_HA/issues",
+  "requirements": [],
+  "render_readme": true
+}
