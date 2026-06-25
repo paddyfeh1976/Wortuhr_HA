@@ -2,7 +2,7 @@
 
 from homeassistant.components.button import ButtonEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_HOST
+from homeassistant.const import CONF_HOST, EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -61,6 +61,7 @@ class WortuhrRebootButton(WortuhrButton):
     _attr_name = "Reboot"
     _attr_unique_id = "wortuhr_reboot"
     _attr_icon = "mdi:restart"
+    _attr_entity_category = EntityCategory.CONFIG
 
     async def async_press(self) -> None:
         """Handle button press."""
@@ -77,6 +78,7 @@ class WortuhrWiFiResetButton(WortuhrButton):
     _attr_name = "WiFi Reset"
     _attr_unique_id = "wortuhr_wifi_reset"
     _attr_icon = "mdi:wifi-remove"
+    _attr_entity_category = EntityCategory.CONFIG
 
     async def async_press(self) -> None:
         """Handle button press."""
@@ -93,6 +95,7 @@ class WortuhrMp3ResetButton(WortuhrButton):
     _attr_name = "MP3 Reset"
     _attr_unique_id = "wortuhr_mp3_reset"
     _attr_icon = "mdi:music-circle"
+    _attr_entity_category = EntityCategory.CONFIG
 
     async def async_press(self) -> None:
         """Handle button press."""

@@ -2,7 +2,7 @@
 <p align="center">
   <img src="logo.png" width="400">
 </p>
-Diese Projekt ist noch in der Entwicklung. Bitte nicht verwenden.
+Diese Projekt ist noch in der Entwicklung. Bitte nicht verwenden bzw. auf eigenes Risiko.
 
 Eine Home Assistant Integration zur Steuerung der [Wortuhr](https://www.wortuhr.daniel-stingl.de/) über die HTTP-API.
 
