@@ -10,7 +10,7 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN
+from .const import COLOR_OPTIONS, DOMAIN
 from .services import async_show_text
 
 
@@ -58,6 +58,6 @@ class WortuhrShowMessageButton(ButtonEntity):
         color_state = self.hass.states.get(color_entity_id) if color_entity_id else None
 
         text = message_state.state if message_state else ""
-        color = int(color_state.state) if color_state and color_state.state.isdigit() else 0
+        color = COLOR_OPTIONS.get(color_state.state, 0) if color_state else 0
 
         await async_show_text(self.hass, self._host, text, color, 0)
