@@ -8,6 +8,7 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
+from .services import async_mp3_reset, async_reboot, async_wifi_reset
 
 
 async def async_setup_entry(
@@ -65,11 +66,7 @@ class WortuhrRebootButton(WortuhrButton):
 
     async def async_press(self) -> None:
         """Handle button press."""
-        await self.hass.services.async_call(
-            DOMAIN,
-            "reboot",
-            {"host": self._host},
-        )
+        await async_reboot(self.hass, self._host)
 
 
 class WortuhrWiFiResetButton(WortuhrButton):
@@ -82,11 +79,7 @@ class WortuhrWiFiResetButton(WortuhrButton):
 
     async def async_press(self) -> None:
         """Handle button press."""
-        await self.hass.services.async_call(
-            DOMAIN,
-            "wifi_reset",
-            {"host": self._host},
-        )
+        await async_wifi_reset(self.hass, self._host)
 
 
 class WortuhrMp3ResetButton(WortuhrButton):
@@ -99,8 +92,4 @@ class WortuhrMp3ResetButton(WortuhrButton):
 
     async def async_press(self) -> None:
         """Handle button press."""
-        await self.hass.services.async_call(
-            DOMAIN,
-            "mp3_reset",
-            {"host": self._host},
-        )
+        await async_mp3_reset(self.hass, self._host)

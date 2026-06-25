@@ -10,6 +10,7 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN, MODE_OPTIONS
+from .services import async_set_mode
 
 
 async def async_setup_entry(
@@ -61,11 +62,11 @@ class WortuhrModeSelect(SelectEntity):
         if option not in MODE_OPTIONS:
             return
 
-        mode = MODE_OPTIONS[option]
-        await self.hass.services.async_call(
-            DOMAIN,
-            "set_mode",
-            {"host": self._host, "mode": mode, "sound": False},
+        await async_set_mode(
+            self.hass,
+            self._host,
+            MODE_OPTIONS[option],
+            False,
         )
         self._current_option = option
         self.async_write_ha_state()

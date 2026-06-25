@@ -25,6 +25,94 @@ async def request(hass: HomeAssistant, url: str) -> str:
         return await response.text()
 
 
+async def async_show_text(
+    hass: HomeAssistant,
+    host: str,
+    text: str,
+    color: int = 0,
+    buzzer: int = 0,
+) -> str:
+    url = _build_url(
+        host,
+        "showText",
+        {
+            "buzzer": buzzer,
+            "color": color,
+            "text": text,
+        },
+    )
+    return await request(hass, url)
+
+
+async def async_show_event(
+    hass: HomeAssistant,
+    host: str,
+    text: str,
+    color: int = 0,
+    audio: int = 0,
+    preani: str = "",
+    postani: str = "",
+) -> str:
+    url = _build_url(
+        host,
+        "setEvent",
+        {
+            "text": text,
+            "color": color,
+            "audio": audio,
+            "preani": preani,
+            "postani": postani,
+        },
+    )
+    return await request(hass, url)
+
+
+async def async_play_audio(
+    hass: HomeAssistant,
+    host: str,
+    soundfile: int,
+    volume: int = 0,
+) -> str:
+    url = _build_url(
+        host,
+        "PlayAudio",
+        {
+            "soundfile": soundfile,
+            "volume": volume,
+        },
+    )
+    return await request(hass, url)
+
+
+async def async_set_mode(
+    hass: HomeAssistant,
+    host: str,
+    mode: int,
+    sound: bool = False,
+) -> str:
+    url = _build_url(
+        host,
+        "control",
+        {
+            "mode": mode,
+            "sound": int(sound),
+        },
+    )
+    return await request(hass, url)
+
+
+async def async_reboot(hass: HomeAssistant, host: str) -> str:
+    return await request(hass, f"http://{host}/reboot")
+
+
+async def async_wifi_reset(hass: HomeAssistant, host: str) -> str:
+    return await request(hass, f"http://{host}/wifireset")
+
+
+async def async_mp3_reset(hass: HomeAssistant, host: str) -> str:
+    return await request(hass, f"http://{host}/mp3reset")
+
+
 def _get_host(hass: HomeAssistant, call: ServiceCall) -> str:
     """Abrufen der Host-IP aus Service-Call oder Konfiguration."""
     # Falls host im Service-Call angegeben, verwende diese
@@ -44,71 +132,55 @@ async def async_setup_services(hass: HomeAssistant):
 
     async def show_text(call: ServiceCall):
         host = _get_host(hass, call)
-        url = _build_url(
+        await async_show_text(
+            hass,
             host,
-            "showText",
-            {
-                "buzzer": call.data.get("buzzer", 0),
-                "color": call.data.get("color", 0),
-                "text": call.data["text"],
-            },
+            call.data["text"],
+            call.data.get("color", 0),
+            call.data.get("buzzer", 0),
         )
-
-        await request(hass, url)
 
     async def show_event(call: ServiceCall):
         host = _get_host(hass, call)
-        url = _build_url(
+        await async_show_event(
+            hass,
             host,
-            "setEvent",
-            {
-                "text": call.data["text"],
-                "color": call.data.get("color", 0),
-                "audio": call.data.get("audio", 0),
-                "preani": call.data.get("preani", ""),
-                "postani": call.data.get("postani", ""),
-            },
+            call.data["text"],
+            call.data.get("color", 0),
+            call.data.get("audio", 0),
+            call.data.get("preani", ""),
+            call.data.get("postani", ""),
         )
-
-        await request(hass, url)
 
     async def play_audio(call: ServiceCall):
         host = _get_host(hass, call)
-        url = _build_url(
+        await async_play_audio(
+            hass,
             host,
-            "PlayAudio",
-            {
-                "soundfile": call.data["soundfile"],
-                "volume": call.data.get("volume", 0),
-            },
+            call.data["soundfile"],
+            call.data.get("volume", 0),
         )
-
-        await request(hass, url)
 
     async def set_mode(call: ServiceCall):
         host = _get_host(hass, call)
-        url = _build_url(
+        await async_set_mode(
+            hass,
             host,
-            "control",
-            {
-                "mode": call.data["mode"],
-                "sound": int(call.data.get("sound", False)),
-            },
+            call.data["mode"],
+            bool(call.data.get("sound", False)),
         )
-
-        await request(hass, url)
 
     async def reboot(call: ServiceCall):
         host = _get_host(hass, call)
-        await request(hass, f"http://{host}/reboot")
+        await async_reboot(hass, host)
 
     async def wifi_reset(call: ServiceCall):
         host = _get_host(hass, call)
-        await request(hass, f"http://{host}/wifireset")
+        await async_wifi_reset(hass, host)
 
     async def mp3_reset(call: ServiceCall):
         host = _get_host(hass, call)
-        await request(hass, f"http://{host}/mp3reset")
+        await async_mp3_reset(hass, host)
 
     hass.services.async_register(
         DOMAIN,
