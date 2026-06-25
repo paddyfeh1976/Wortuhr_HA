@@ -11,6 +11,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN, MODE_OPTIONS
 from .services import async_set_mode
+from .color_select import WortuhrColorSelect
 
 
 async def async_setup_entry(
@@ -29,7 +30,12 @@ async def async_setup_entry(
         configuration_url=f"http://{host}",
     )
 
-    async_add_entities([WortuhrModeSelect(hass, config_entry, device_info, host)])
+    async_add_entities(
+        [
+            WortuhrModeSelect(hass, config_entry, device_info, host),
+            WortuhrColorSelect(hass, config_entry, device_info, host),
+        ]
+    )
 
 
 class WortuhrModeSelect(SelectEntity):
@@ -37,7 +43,6 @@ class WortuhrModeSelect(SelectEntity):
 
     _attr_has_entity_name = True
     _attr_name = "Display Mode"
-    _attr_unique_id = "wortuhr_mode_select"
     _attr_options = list(MODE_OPTIONS.keys())
     _attr_icon = "mdi:clock-start"
 
@@ -52,6 +57,7 @@ class WortuhrModeSelect(SelectEntity):
         self.config_entry = config_entry
         self._attr_device_info = device_info
         self._host = host
+        self._attr_unique_id = f"wortuhr_mode_select_{config_entry.entry_id}"
         self._current_option = "Zeit (Uhr)"
 
     @property
