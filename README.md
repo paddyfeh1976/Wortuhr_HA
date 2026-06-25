@@ -1,7 +1,7 @@
 # Wortuhr Integration für Home Assistant
-<p align="center">
-  <img src="logo.png" width="400">
-</p>
+
+![Wortuhr Logo](https://raw.githubusercontent.com/paddyfeh1976/Wortuhr/main/images/logo.png)
+
 Diese Projekt ist noch in der Entwicklung. Bitte nicht verwenden bzw. auf eigenes Risiko.
 
 Eine Home Assistant Integration zur Steuerung der [Wortuhr](https://www.wortuhr.daniel-stingl.de/) über die HTTP-API.
