@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from homeassistant.components.select import SelectEntity
+from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, EntityCategory
 from homeassistant.core import HomeAssistant
@@ -31,7 +32,7 @@ async def async_setup_entry(
     async_add_entities([WortuhrLedColorSelect(hass, config_entry, device_info, host)])
 
 
-class WortuhrLedColorSelect(SelectEntity):
+class WortuhrLedColorSelect(SelectEntity, RestoreEntity):
     _attr_has_entity_name = True
     _attr_name = "Led Farbe"
     _attr_options = list(COLOR_OPTIONS.keys())
@@ -50,7 +51,21 @@ class WortuhrLedColorSelect(SelectEntity):
         self._attr_device_info = device_info
         self._host = host
         self._attr_unique_id = f"wortuhr_led_color_select_{config_entry.entry_id}"
-        self._current_option = "Weiß"
+
+    async def async_added_to_hass(self) -> None:
+        """Wird aufgerufen, wenn die Entität zu Home Assistant hinzugefügt wurde."""
+        # Wichtig: Immer die Basisklassen-Methode aufrufen
+        await super().async_added_to_hass()
+        
+        # 1. Letzten Status wiederherstellen (falls verfügbar)
+        last_state = await self.async_get_last_state()
+        if last_state and last_state.state in self._attr_options:
+            self._current_option = last_state.state
+        else:
+            # Fallback, falls kein gültiger Status gefunden wurde
+            self._current_option = self._attr_options[0]
+
+        # 2. Hier könntest du auch z. B. Dispatcher-Signale oder Webhook-Event        
 
     @property
     def current_option(self) -> str | None:
