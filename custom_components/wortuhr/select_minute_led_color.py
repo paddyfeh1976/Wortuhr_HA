@@ -66,5 +66,5 @@ class WortuhrMinuteLedColorSelect(SelectEntity):
             "cco",
             COLOR_OPTIONS[option],
         )
-        self._current_option = option
+        self._current = option
         self.async_write_ha_state()
