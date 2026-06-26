@@ -4,12 +4,13 @@ from __future__ import annotations
 
 from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_HOST
+from homeassistant.const import CONF_HOST, EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN, COLOR_OPTIONS
+from .services import async_set_setting
 
 
 async def async_setup_entry(
@@ -27,14 +28,15 @@ async def async_setup_entry(
         configuration_url=f"http://{host}",
     )
 
-    async_add_entities([WortuhrColorSelect(hass, config_entry, device_info, host)])
+    async_add_entities([WortuhrLedColorSelect(hass, config_entry, device_info, host)])
 
 
-class WortuhrColorSelect(SelectEntity):
+class WortuhrLedColorSelect(SelectEntity):
     _attr_has_entity_name = True
-    _attr_name = "Nachricht Farbe"
+    _attr_name = "Led Farbe"
     _attr_options = list(COLOR_OPTIONS.keys())
     _attr_icon = "mdi:format-color-text"
+    _attr_entity_category = EntityCategory.CONFIG
 
     def __init__(
         self,
@@ -47,7 +49,7 @@ class WortuhrColorSelect(SelectEntity):
         self.config_entry = config_entry
         self._attr_device_info = device_info
         self._host = host
-        self._attr_unique_id = f"wortuhr_message_color_select_{config_entry.entry_id}"
+        self._attr_unique_id = f"wortuhr_led_color_select_{config_entry.entry_id}"
         self._current = "Weiß"
 
     @property
@@ -57,5 +59,12 @@ class WortuhrColorSelect(SelectEntity):
     async def async_select_option(self, option: str) -> None:
         if option not in COLOR_OPTIONS:
             return
-        self._current = option
+
+        await async_set_setting(
+            self.hass,
+            self._host,
+            "co",
+            COLOR_OPTIONS[option],
+        )
+        self._current_option = option
         self.async_write_ha_state()

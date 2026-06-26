@@ -100,6 +100,21 @@ async def async_set_mode(
     )
     return await request(hass, url)
 
+async def async_set_setting(
+    hass: HomeAssistant,
+    host: str,    
+    key: str,
+    value: any,
+) -> str:
+    url = _build_url(
+        host,
+        "commitSettings",
+        {
+            key: value,
+        },
+    )
+    return await request(hass, url)
+
 
 async def async_reboot(hass: HomeAssistant, host: str) -> str:
     return await request(hass, f"http://{host}/reboot")

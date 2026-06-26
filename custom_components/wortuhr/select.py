@@ -11,9 +11,10 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN, MODE_OPTIONS
 from .services import async_set_mode
-from .color_select import WortuhrColorSelect
-from .event_post_ani_select import WortuhrPostAnimationSelect
-from .event_pre_ani_select  import WortuhrPreAnimationSelect
+from .select_message_text_color import WortuhrMessageTextColorSelect
+from .select_event_post_ani import WortuhrPostAnimationSelect
+from .select_event_pre_ani  import WortuhrPreAnimationSelect
+from .select_led_color import WortuhrLedColorSelect
 
 
 async def async_setup_entry(
@@ -35,9 +36,10 @@ async def async_setup_entry(
     async_add_entities(
         [
             WortuhrModeSelect(hass, config_entry, device_info, host),
-            WortuhrColorSelect(hass, config_entry, device_info, host),
+            WortuhrMessageTextColorSelect(hass, config_entry, device_info, host),
             WortuhrPreAnimationSelect(hass, config_entry, device_info, host),
             WortuhrPostAnimationSelect(hass, config_entry, device_info, host),
+            WortuhrLedColorSelect(hass, config_entry, device_info, host),
         ]
     )
 
