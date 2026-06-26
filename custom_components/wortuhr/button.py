@@ -10,6 +10,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .const import DOMAIN
 from .services import async_mp3_reset, async_reboot, async_wifi_reset
 from .button_message import WortuhrShowMessageButton
+from .button_event import WortuhrShowEventButton
 
 
 async def async_setup_entry(
@@ -33,6 +34,7 @@ async def async_setup_entry(
         WortuhrWiFiResetButton(hass, config_entry, device_info, host),
         WortuhrMp3ResetButton(hass, config_entry, device_info, host),
         WortuhrShowMessageButton(hass, config_entry, device_info, host),
+        WortuhrShowEventButton(hass, config_entry, device_info, host),
     ]
 
     async_add_entities(buttons)
