@@ -56,12 +56,12 @@ class WortuhrShowEventButton(ButtonEntity):
         event_pre_animation_entity_id = registry.async_get_entity_id(
             "select",
             DOMAIN,
-            f"wortuhr_event_pre_animation_select_{self.config_entry.entry_id}",
+            f"wortuhr_pre_animation_select_{self.config_entry.entry_id}",
         )       
         event_post_animation_entity_id = registry.async_get_entity_id(
             "select",
             DOMAIN,
-            f"wortuhr_event_post_animation_select_{self.config_entry.entry_id}",
+            f"wortuhr_post_animation_select_{self.config_entry.entry_id}",
         )
 
         message_state = self.hass.states.get(text_entity_id) if text_entity_id else None
