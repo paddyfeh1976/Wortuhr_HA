@@ -50,11 +50,11 @@ class WortuhrMinuteLedColorSelect(SelectEntity):
         self._attr_device_info = device_info
         self._host = host
         self._attr_unique_id = f"wortuhr_minute_led_color_select_{config_entry.entry_id}"
-        self._current = "Weiß"
+        self._current_option = "Weiß"
 
     @property
     def current_option(self) -> str | None:
-        return self._current
+        return self._current_option
 
     async def async_select_option(self, option: str) -> None:
         if option not in COLOR_OPTIONS:
@@ -66,5 +66,5 @@ class WortuhrMinuteLedColorSelect(SelectEntity):
             "cco",
             COLOR_OPTIONS[option],
         )
-        self._current = option
+        self._current_option = option
         self.async_write_ha_state()
