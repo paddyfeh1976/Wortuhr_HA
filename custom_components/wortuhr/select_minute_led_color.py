@@ -52,14 +52,6 @@ class WortuhrMinuteLedColorSelect(SelectEntity):
         self._attr_unique_id = f"wortuhr_minute_led_color_select_{config_entry.entry_id}"
         self._current = "Weiß"
 
-    async def async_added_to_hass(self) -> None:
-        """Wird aufgerufen, wenn die Entität geladen wird."""
-        await super().async_added_to_hass()
-        if (old_state := await self.async_get_last_state()) is not None:
-            # Prüfen, ob der alte Zustand einer der erlaubten Werte ist
-            if old_state.state in self._attr_options:
-                self._current = old_state.state
-
     @property
     def current_option(self) -> str | None:
         return self._current
