@@ -48,10 +48,10 @@ async def async_show_event(
     hass: HomeAssistant,
     host: str,
     text: str,
-    color: int = 0,
+    color: int,
+    preani: str,
+    postani: str,
     audio: int = 0,
-    preani: str = "",
-    postani: str = "",
 ) -> str:
     url = _build_url(
         host,
@@ -147,9 +147,9 @@ async def async_setup_services(hass: HomeAssistant):
             host,
             call.data["text"],
             call.data.get("color", 0),
-            call.data.get("audio", 0),
             call.data.get("preani", ""),
             call.data.get("postani", ""),
+            call.data.get("audio", 0),
         )
 
     async def play_audio(call: ServiceCall):
