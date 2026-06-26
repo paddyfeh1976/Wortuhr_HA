@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from homeassistant.components.select import SelectEntity
+from homeassistant.components.select import RestoreSelectEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, EntityCategory
 from homeassistant.core import HomeAssistant
@@ -31,11 +31,11 @@ async def async_setup_entry(
     async_add_entities([WortuhrLedColorSelect(hass, config_entry, device_info, host)])
 
 
-class WortuhrLedColorSelect(SelectEntity):
+class WortuhrLedColorSelect(RestoreSelectEntity):
     _attr_has_entity_name = True
     _attr_name = "Led Farbe"
     _attr_options = list(COLOR_OPTIONS.keys())
-    _attr_icon = "mdi:format-color-text"
+    _attr_icon = "mdi:led-strip-variant"
     _attr_entity_category = EntityCategory.CONFIG
 
     def __init__(
