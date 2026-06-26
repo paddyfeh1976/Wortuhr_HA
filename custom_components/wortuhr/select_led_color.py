@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from homeassistant.components.select import RestoreSelectEntity
+from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, EntityCategory
 from homeassistant.core import HomeAssistant
@@ -31,7 +31,7 @@ async def async_setup_entry(
     async_add_entities([WortuhrLedColorSelect(hass, config_entry, device_info, host)])
 
 
-class WortuhrLedColorSelect(RestoreSelectEntity):
+class WortuhrLedColorSelect(SelectEntity):
     _attr_has_entity_name = True
     _attr_name = "Led Farbe"
     _attr_options = list(COLOR_OPTIONS.keys())
@@ -51,6 +51,14 @@ class WortuhrLedColorSelect(RestoreSelectEntity):
         self._host = host
         self._attr_unique_id = f"wortuhr_led_color_select_{config_entry.entry_id}"
         self._current = "Weiß"
+
+    async def async_added_to_hass(self) -> None:
+        """Wird aufgerufen, wenn die Entität geladen wird."""
+        await super().async_added_to_hass()
+        if (old_state := await self.async_get_last_state()) is not None:
+            # Prüfen, ob der alte Zustand einer der erlaubten Werte ist
+            if old_state.state in self._attr_options:
+                self._current = old_state.state
 
     @property
     def current_option(self) -> str | None:
