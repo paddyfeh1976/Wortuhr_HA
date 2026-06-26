@@ -1,6 +1,6 @@
 # Wortuhr Integration für Home Assistant
 
-![image](https://raw.githubusercontent.com/paddyfeh1976/Wortuhr/main/images/icon.png)
+![image](https://raw.githubusercontent.com/paddyfeh1976/Wortuhr/main/images/banner_klein.png)
 
 Diese Projekt ist noch in der Entwicklung. Bitte nicht verwenden bzw. auf eigenes Risiko.
 
