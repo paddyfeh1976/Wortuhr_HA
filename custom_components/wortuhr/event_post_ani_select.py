@@ -34,6 +34,7 @@ class WortuhrPostAnimationSelect(SelectEntity):
     _attr_has_entity_name = True
     _attr_name = "Nachanimation"
     _attr_options = list(EVENT_ANIMATION_OPTIONS.keys())
+    _attr_icon = "mdi:animation-play"
 
     def __init__(
         self,
