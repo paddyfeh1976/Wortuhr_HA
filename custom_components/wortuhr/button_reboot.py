@@ -1,32 +1,16 @@
-"""Button to show the current message on the Wortuhr."""
+"""Button to reboot the Wortuhr."""
 
 from __future__ import annotations
 
-from homeassistant.components.button import ButtonEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
-from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
 from .services import async_reboot
 from .button import WortuhrButton
-
-
-async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
-    host = config_entry.data.get(CONF_HOST)
-
-    device_info = DeviceInfo(
-        identifiers={(DOMAIN, host)},
-        name="Wortuhr",
-        manufacturer="Wortuhr",
-        model="HTTP API",
-        configuration_url=f"http://{host}",
-    )
-
-    async_add_entities([WortuhrRebootButton(hass, config_entry, device_info, host)])
 
 
 class WortuhrRebootButton(WortuhrButton):

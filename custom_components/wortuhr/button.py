@@ -8,7 +8,7 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
-from .services import async_mp3_reset, async_reboot, async_wifi_reset
+from .services import async_mp3_reset, async_wifi_reset
 from .button_reboot import WortuhrRebootButton
 from .button_message import WortuhrShowMessageButton
 from .button_event import WortuhrShowEventButton
