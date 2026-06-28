@@ -8,8 +8,7 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
-from .services import async_mp3_reset, async_wifi_reset
-from .button_reboot import WortuhrRebootButton
+from .services import async_reboot, async_mp3_reset, async_wifi_reset
 from .button_message import WortuhrShowMessageButton
 from .button_event import WortuhrShowEventButton
 
@@ -60,6 +59,27 @@ class WortuhrButton(ButtonEntity):
         self._device_info = device_info
         self._host = host
         self._attr_device_info = device_info
+
+class WortuhrRebootButton(WortuhrButton):
+    """Button entity for rebooting Wortuhr."""
+
+    _attr_name = "Reboot"
+    _attr_icon = "mdi:restart"
+    _attr_entity_category = EntityCategory.CONFIG
+
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        config_entry: ConfigEntry,
+        device_info: DeviceInfo,
+        host: str,
+    ) -> None:
+        super().__init__(hass, config_entry, device_info, host)
+        self._attr_unique_id = f"wortuhr_reboot_{config_entry.entry_id}"
+
+    async def async_press(self) -> None:
+        """Handle button press."""
+        await async_reboot(self.hass, self._host)
 
 class WortuhrWiFiResetButton(WortuhrButton):
     """Button entity for WiFi reset."""
