@@ -29,7 +29,7 @@ async def async_setup_entry(
 
 class WortuhrItIsSwitch(SwitchEntity):
     _attr_has_entity_name = True
-    _attr_name = 'Zeige "Es ist"'
+    _attr_name = "Zeige \"Es ist\""
     _attr_icon = "mdi:clock-in"
     _attr_entity_category = EntityCategory.CONFIG
 
