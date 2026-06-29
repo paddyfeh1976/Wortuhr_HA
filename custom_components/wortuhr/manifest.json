@@ -3,7 +3,7 @@
   "name": "Wortuhr",
   "version": "1.0.0",
   "documentation": "",
-  "platforms": ["button", "select", "text"],
+  "platforms": ["button", "select", "text", "switch"],
   "config_flow": true,
   "codeowners": [],
   "iot_class": "local_polling",

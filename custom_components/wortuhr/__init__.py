@@ -5,7 +5,12 @@ from homeassistant.core import HomeAssistant
 from .const import DOMAIN
 from .services import async_setup_services
 
-PLATFORMS = [Platform.BUTTON, Platform.SELECT, Platform.TEXT]
+PLATFORMS = [
+    Platform.BUTTON, 
+    Platform.SELECT, 
+    Platform.TEXT, 
+    Platform.SWITCH
+]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
