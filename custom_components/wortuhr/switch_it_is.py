@@ -43,7 +43,7 @@ class WortuhrItIsSwitch(SwitchEntity):
         self.hass = hass
         self._host = host
         self._attr_device_info = device_info
-        self._attr_unique_id = f"wortuhr_auto_brightness_{config_entry.entry_id}"
+        self._attr_unique_id = f"wortuhr_it_is_{config_entry.entry_id}"
         self._is_on = False
 
     @property
