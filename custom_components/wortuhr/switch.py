@@ -9,7 +9,6 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
 from .switch_automatic_brigthness import WortuhrAutoBrightnessSwitch
-from .switch_automatic_brigthness import WortuhrAutoBrightnessSwitch
 from .switch_it_is import WortuhrItIsSwitch
 
 
