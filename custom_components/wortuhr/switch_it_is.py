@@ -5,7 +5,7 @@ from typing import Any
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_HOST, EntityCategory
+from homeassistant.const import CONF_HOST, STATE_ON, EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -45,6 +45,7 @@ class WortuhrItIsSwitch(SwitchEntity, RestoreEntity):
         self._host = host
         self._attr_device_info = device_info
         self._attr_unique_id = f"wortuhr_it_is_{config_entry.entry_id}"
+        self._is_on = False
 
     async def async_added_to_hass(self) -> None:
         """Wird aufgerufen, wenn die Entität zu Home Assistant hinzugefügt wurde."""
@@ -53,13 +54,10 @@ class WortuhrItIsSwitch(SwitchEntity, RestoreEntity):
         
         # 1. Letzten Status wiederherstellen (falls verfügbar)
         last_state = await self.async_get_last_state()
-        if last_state and last_state.state in self._attr_options:
-            self._is_on =  last_state.state
-        else:
-            # Fallback, falls kein gültiger Status gefunden wurde
-            self._is_on = False
+        if last_state is not None:
+            self._is_on = last_state.state == STATE_ON   
 
-        # 2. Hier könntest du auch z. B. Dispatcher-Signale oder Webhook-Event            
+        # 2. Hier könntest du auch z. B. Dispatcher-Signale oder Webhook-Event          
 
     @property
     def is_on(self) -> bool:
