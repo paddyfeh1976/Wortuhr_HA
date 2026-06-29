@@ -3,8 +3,9 @@ from __future__ import annotations
 
 from typing import Any
 from homeassistant.components.switch import SwitchEntity
+from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_HOST, EntityCategory
+from homeassistant.const import CONF_HOST, STATE_ON, EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -27,7 +28,7 @@ async def async_setup_entry(
     )
     async_add_entities([WortuhrAutoBrightnessSwitch(hass, config_entry, device_info, host)])
 
-class WortuhrAutoBrightnessSwitch(SwitchEntity):
+class WortuhrAutoBrightnessSwitch(SwitchEntity, RestoreEntity):
     _attr_has_entity_name = True
     _attr_name = "Automatische Helligkeit"
     _attr_icon = "mdi:brightness-auto"
@@ -45,6 +46,18 @@ class WortuhrAutoBrightnessSwitch(SwitchEntity):
         self._attr_device_info = device_info
         self._attr_unique_id = f"wortuhr_auto_brightness_{config_entry.entry_id}"
         self._is_on = False
+
+    async def async_added_to_hass(self) -> None:
+        """Wird aufgerufen, wenn die Entität zu Home Assistant hinzugefügt wurde."""
+        # Wichtig: Immer die Basisklassen-Methode aufrufen
+        await super().async_added_to_hass()
+        
+        # 1. Letzten Status wiederherstellen (falls verfügbar)
+        last_state = await self.async_get_last_state()
+        if last_state is not None:
+            self._is_on = last_state.state == STATE_ON   
+
+        # 2. Hier könntest du auch z. B. Dispatcher-Signale oder Webhook-Event          
 
     @property
     def is_on(self) -> bool:
