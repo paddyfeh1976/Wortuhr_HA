@@ -50,7 +50,7 @@ class WortuhrBackgroundOptionSelect(SelectEntity, RestoreEntity):
         self.config_entry = config_entry
         self._attr_device_info = device_info
         self._host = host
-        self._attr_unique_id = f"wortuhr_minute_led_color_select_{config_entry.entry_id}"
+        self._attr_unique_id = f"wortuhr_background_option_{config_entry.entry_id}"
 
     async def async_added_to_hass(self) -> None:
         """Wird aufgerufen, wenn die Entität zu Home Assistant hinzugefügt wurde."""
