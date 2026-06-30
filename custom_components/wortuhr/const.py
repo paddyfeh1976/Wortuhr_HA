@@ -136,3 +136,9 @@ EVENT_ANIMATION_OPTIONS = {
     "Z2100": "Z2100",
     "Z2200": "Z2200",
 }
+
+BACKGROUND_OPTIONS = {
+    "Aus": 0,
+    "Zeit": 1,
+    "Immer": 2,
+}
