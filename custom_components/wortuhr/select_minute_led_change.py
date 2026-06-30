@@ -10,7 +10,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN, BACKGROUND_OPTIONS
+from .const import DOMAIN, MINUTE_LED_CHANGE_OPTIONS
 from .services import async_set_setting
 
 
@@ -29,13 +29,13 @@ async def async_setup_entry(
         configuration_url=f"http://{host}",
     )
 
-    async_add_entities([WortuhrBackgroundOptionSelect(hass, config_entry, device_info, host)])
+    async_add_entities([WortuhrMinuteLedChangeSelect(hass, config_entry, device_info, host)])
 
 
-class WortuhrBackgroundOptionSelect(SelectEntity, RestoreEntity):
+class WortuhrMinuteLedChangeSelect(SelectEntity, RestoreEntity):
     _attr_has_entity_name = True
-    _attr_name = "Hintergrund"
-    _attr_options = list(BACKGROUND_OPTIONS.keys())
+    _attr_name = "Minuten Led Farbwechsel"
+    _attr_options = list(MINUTE_LED_CHANGE_OPTIONS.keys())
     _attr_icon = "mdi:led-strip"
     _attr_entity_category = EntityCategory.CONFIG
 
@@ -50,7 +50,7 @@ class WortuhrBackgroundOptionSelect(SelectEntity, RestoreEntity):
         self.config_entry = config_entry
         self._attr_device_info = device_info
         self._host = host
-        self._attr_unique_id = f"wortuhr_background_option_{config_entry.entry_id}"
+        self._attr_unique_id = f"wortuhr_minute_led_change_select_{config_entry.entry_id}"
 
     async def async_added_to_hass(self) -> None:
         """Wird aufgerufen, wenn die Entität zu Home Assistant hinzugefügt wurde."""
@@ -72,14 +72,14 @@ class WortuhrBackgroundOptionSelect(SelectEntity, RestoreEntity):
         return self._current_option
 
     async def async_select_option(self, option: str) -> None:
-        if option not in BACKGROUND_OPTIONS:
+        if option not in MINUTE_LED_CHANGE_OPTIONS:
             return
 
         await async_set_setting(
             self.hass,
             self._host,
-            "bgce",
-            BACKGROUND_OPTIONS[option],
+            "ccc",
+            MINUTE_LED_CHANGE_OPTIONS[option],
         )
         self._current_option = option
         self.async_write_ha_state()

@@ -28,7 +28,7 @@ async def async_setup_entry(
 
 class WortuhrBackgroundColorPicker(TextEntity):
     _attr_has_entity_name = True
-    _attr_name = "Hintergrundfarbe"
+    _attr_name = "Hintergrund Farbe"
     _attr_icon = "mdi:palette"
     _attr_entity_category = EntityCategory.CONFIG
     

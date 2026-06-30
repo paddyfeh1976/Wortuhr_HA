@@ -142,3 +142,18 @@ BACKGROUND_OPTIONS = {
     "Zeit": 1,
     "Immer": 2,
 }
+
+LED_CHANGE_OPTIONS = {
+    "Aus": 0,
+    "Alle 5 Minuten": 1,
+    "Stündlich": 2,
+    "Täglich": 3,
+}
+
+MINUTE_LED_CHANGE_OPTIONS = {
+    "Aus": 0,
+    "Alle 5 Minuten": 1,
+    "Stündlich": 2,
+    "Täglich": 3,
+    "Wie Hauptfarbe": 4,
+}

@@ -18,6 +18,8 @@ from .select_event_pre_ani  import WortuhrPreAnimationSelect
 from .select_led_color import WortuhrLedColorSelect
 from .select_minute_led_color import WortuhrMinuteLedColorSelect
 from .select_background_option import WortuhrBackgroundOptionSelect
+from .select_led_change import WortuhrLedChangeSelect
+from .select_minute_led_change import WortuhrMinuteLedChangeSelect
 
 
 async def async_setup_entry(
@@ -44,6 +46,8 @@ async def async_setup_entry(
             WortuhrPostAnimationSelect(hass, config_entry, device_info, host),
             WortuhrLedColorSelect(hass, config_entry, device_info, host),
             WortuhrMinuteLedColorSelect(hass, config_entry, device_info, host),
-            WortuhrBackgroundOptionSelect(hass, config_entry, device_info, host),   
+            WortuhrBackgroundOptionSelect(hass, config_entry, device_info, host),  
+            WortuhrLedChangeSelect(hass, config_entry, device_info, host),
+            WortuhrMinuteLedChangeSelect(hass, config_entry, device_info, host),
         ]
     )
