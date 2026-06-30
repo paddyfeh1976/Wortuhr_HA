@@ -30,7 +30,7 @@ async def async_setup_entry(
 
 class WortuhrOnOffSwitch(SwitchEntity, RestoreEntity):
     _attr_has_entity_name = True
-    _attr_name = "Zeige \"Es ist\""
+    _attr_name = "An/Aus"
     _attr_icon = "mdi:clock-in"
 
     def __init__(
