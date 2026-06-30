@@ -10,7 +10,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .const import DOMAIN
 from .switch_automatic_brigthness import WortuhrAutoBrightnessSwitch
 from .switch_it_is import WortuhrItIsSwitch
-
+from .switch_on_off import WortuhrOnOffSwitch
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -28,7 +28,8 @@ async def async_setup_entry(
     async_add_entities(
         [
             WortuhrAutoBrightnessSwitch(hass, config_entry, device_info, host),
-            WortuhrItIsSwitch(hass, config_entry, device_info, host)
+            WortuhrItIsSwitch(hass, config_entry, device_info, host),
+            WortuhrOnOffSwitch(hass, config_entry, device_info, host),
         ]
     )
 
