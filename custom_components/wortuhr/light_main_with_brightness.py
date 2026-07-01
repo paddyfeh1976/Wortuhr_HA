@@ -84,13 +84,14 @@ class WortuhrMainWithBrightnessLight(LightEntity, RestoreEntity):
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Wortuhr einschalten / Helligkeit ändern."""
-        self._is_on = True
+        if not self._is_on:
+            self._is_on = True
+
+            await async_set_mode(self.hass, self._host, 0)
 
         # Falls der Schieberegler bewegt wurde, den neuen HA-Wert (0-255) abfangen
         if ATTR_BRIGHTNESS in kwargs:
             self._brightness = kwargs[ATTR_BRIGHTNESS]
-
-        await async_set_mode(self.hass, self._host, 0)
 
         # Umrechnung des HA-Wertes (0-255) in Prozent (0-100) für die commitSettings-API
         pct_val = int(math.ceil(brightness_to_value(BRIGHTNESS_SCALE, self._brightness)))
