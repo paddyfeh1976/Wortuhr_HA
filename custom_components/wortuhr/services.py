@@ -6,6 +6,11 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .const import DOMAIN
 
+import logging
+
+# Logger für diese Datei initialisieren
+_LOGGER = logging.getLogger(__name__)
+
 DEFAULT_HOST = "192.168.178.79"
 
 
@@ -20,6 +25,14 @@ def _build_url(host: str, path: str, params: dict | None = None) -> str:
 
 async def request(hass: HomeAssistant, url: str) -> str:
     session = async_get_clientsession(hass)
+
+        # --- HIER DIE LOG-AUSGABE EINFÜGEN ---
+    _LOGGER.info(
+        "Request abgesendet: URL=%s", 
+        url
+    )
+    # -------------------------------------
+
     async with session.get(url, timeout=10) as response:
         response.raise_for_status()
         return await response.text()
