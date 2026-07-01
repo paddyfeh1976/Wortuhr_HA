@@ -1,17 +1,17 @@
-"""Switch entity for Wortuhr auto brightness."""
+"""Light entity for Wortuhr brightness control."""
 from __future__ import annotations
 
 from typing import Any
-from homeassistant.components.switch import SwitchEntity
+from homeassistant.components.light import LightEntity, ColorMode, ATTR_BRIGHTNESS
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_HOST, STATE_ON, EntityCategory
+from homeassistant.const import CONF_HOST, STATE_ON
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
-from .services import async_set_mode
+from .services import async_set_mode, async_set_setting
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -26,13 +26,14 @@ async def async_setup_entry(
         model="HTTP API",
         configuration_url=f"http://{host}",
     )
-    async_add_entities([WortuhrOnOffSwitch(hass, config_entry, device_info, host)])
+    async_add_entities([WortuhrLight(hass, config_entry, device_info, host)])
 
-class WortuhrOnOffSwitch(SwitchEntity, RestoreEntity):
+class WortuhrLight(LightEntity, RestoreEntity):
     _attr_has_entity_name = True
-    _attr_name = "An/Aus"
-    _attr_icon = "mdi:clock-in"
-    _attr_entity_category = EntityCategory.CONFIG
+    _attr_name = "Wortuhr"
+    _attr_color_mode = ColorMode.ONOFF
+    _attr_supported_color_modes = {ColorMode.ONOFF}
+    _attr_icon = "mdi:brightness-6"
 
     def __init__(
         self,
@@ -44,8 +45,9 @@ class WortuhrOnOffSwitch(SwitchEntity, RestoreEntity):
         self.hass = hass
         self._host = host
         self._attr_device_info = device_info
-        self._attr_unique_id = f"wortuhr_on_off_{config_entry.entry_id}"
-        self._is_on = False
+        self._attr_unique_id = f"wortuhr_light_{config_entry.entry_id}"
+        #self._brightness = 127 # Startwert (entspricht ca 50%)
+        self._is_on = True
 
     async def async_added_to_hass(self) -> None:
         """Wird aufgerufen, wenn die Entität zu Home Assistant hinzugefügt wurde."""
@@ -57,11 +59,15 @@ class WortuhrOnOffSwitch(SwitchEntity, RestoreEntity):
         if last_state is not None:
             self._is_on = last_state.state == STATE_ON   
 
-        # 2. Hier könntest du auch z. B. Dispatcher-Signale oder Webhook-Event          
+        # 2. Hier könntest du auch z. B. Dispatcher-Signale oder Webhook-Event           
 
     @property
     def is_on(self) -> bool:
         return self._is_on
+
+ #   @property
+ #   def brightness(self) -> int:
+ #       return self._brightness
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         await async_set_mode(self.hass, self._host, 0)

@@ -9,7 +9,8 @@ PLATFORMS = [
     Platform.BUTTON, 
     Platform.SELECT, 
     Platform.TEXT, 
-    Platform.SWITCH
+    Platform.SWITCH,
+    Platform.LIGHT
 ]
 
 
