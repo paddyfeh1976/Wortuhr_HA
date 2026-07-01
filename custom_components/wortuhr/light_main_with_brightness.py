@@ -15,6 +15,11 @@ from homeassistant.util.color import brightness_to_value
 from .const import DOMAIN
 from .services import async_set_mode, async_set_setting
 
+import logging
+
+# Logger für diese Datei initialisieren
+_LOGGER = logging.getLogger(__name__)
+
 BRIGHTNESS_SCALE = (1, 100)  # Wortuhr brightness scale from 1 to 100
 
 async def async_setup_entry(
@@ -91,7 +96,16 @@ class WortuhrMainWithBrightnessLight(LightEntity, RestoreEntity):
         pct_val = int(math.ceil(brightness_to_value(BRIGHTNESS_SCALE, self._brightness)))
         if pct_val == 0:
             pct_val = 1 # Schutz vor 0%, wenn eingeschaltet wird
-            
+
+        # --- HIER DIE LOG-AUSGABE EINFÜGEN ---
+        _LOGGER.info(
+            "Wortuhr Helligkeitsänderung: HA-Wert=%s -> Berechneter API-Prozentwert=%s (Typ: %s)", 
+            self._brightness, 
+            pct_val,
+            type(pct_val).__name__
+        )
+        # -------------------------------------
+
         # Sendet die Helligkeit an das Gerät
         await async_set_setting(self.hass, self._host, "br", pct_val)
 
