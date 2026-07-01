@@ -3,7 +3,13 @@ from __future__ import annotations
 
 import math
 from typing import Any
-from homeassistant.components.light import LightEntity, ColorMode, ATTR_BRIGHTNESS
+from homeassistant.components.light import (
+    LightEntity, 
+    ColorMode, 
+    ATTR_BRIGHTNESS, 
+    ATTR_EFFECT,
+    LightEntityFeature
+)
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, STATE_ON
@@ -12,7 +18,7 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util.color import brightness_to_value
 
-from .const import DOMAIN
+from .const import DOMAIN, MODE_OPTIONS
 from .services import async_set_mode, async_set_setting
 
 import logging
@@ -43,6 +49,7 @@ class WortuhrMainWithBrightnessLight(LightEntity, RestoreEntity):
     _attr_color_mode = ColorMode.BRIGHTNESS
     _attr_supported_color_modes = {ColorMode.BRIGHTNESS}
     _attr_icon = "mdi:dots-square"
+    _attr_supported_features = LightEntityFeature.EFFECT
 
     def __init__(
         self,
@@ -57,6 +64,7 @@ class WortuhrMainWithBrightnessLight(LightEntity, RestoreEntity):
         self._attr_unique_id = f"wortuhr_light_with_brightness_{config_entry.entry_id}"
         self._brightness = 127 # Startwert (entspricht ca 50%)
         self._is_on = True
+        self._effect = "Zeit (Uhr)"
 
     async def async_added_to_hass(self) -> None:
         """Wird aufgerufen, wenn die Entität zu Home Assistant hinzugefügt wurde."""
@@ -70,7 +78,11 @@ class WortuhrMainWithBrightnessLight(LightEntity, RestoreEntity):
 
             # Hier wird die Helligkeit aus den Attributen des letzten Zustands geladen
             if ATTR_BRIGHTNESS in last_state.attributes:
-                self._brightness = last_state.attributes[ATTR_BRIGHTNESS]            
+                self._brightness = last_state.attributes[ATTR_BRIGHTNESS]    
+
+            # Effekt/Modus-Text wiederherstellen
+            if ATTR_EFFECT in last_state.attributes:
+                self._effect = last_state.attributes[ATTR_EFFECT]                        
 
         # 2. Hier könntest du auch z. B. Dispatcher-Signale oder Webhook-Event           
 
@@ -82,39 +94,59 @@ class WortuhrMainWithBrightnessLight(LightEntity, RestoreEntity):
     def brightness(self) -> int | None:
         return self._brightness
 
+    @property
+    def effect_list(self) -> list[str] | None:
+        """Gibt die Liste der verfügbaren Effekte/Modi für das UI zurück."""
+        # Nutzt die Keys deiner Konstante ("Zeit (Uhr)", "Ansage", "Wochentag", etc.)
+        return list(MODE_OPTIONS.keys())
+
+    @property
+    def effect(self) -> str | None:
+        """Gibt den aktuell aktiven Effekt/Modus zurück."""
+        return self._effect    
+
     async def async_turn_on(self, **kwargs: Any) -> None:
-        """Wortuhr einschalten / Helligkeit ändern."""
-        # Nur einschalten wenn nicht eh schon an, um unnötige API-Aufrufe zu vermeiden
-        if not self._is_on:
-            self._is_on = True
+        """Wortuhr einschalten, Helligkeit ändern oder Effekt wechseln."""
+        self._is_on = True
 
-            await async_set_mode(self.hass, self._host, 0)
+        # Szenario A: Es wurde ein Effekt aus dem Dropdown ausgewählt
+        if ATTR_EFFECT in kwargs:
+            new_effect = kwargs[ATTR_EFFECT]
+            if new_effect in MODE_OPTIONS:
+                self._effect = new_effect
+                mode_id = MODE_OPTIONS[new_effect]
+                _LOGGER.info("Wortuhr Effekt-Wechsel: %s (API Mode: %s)", new_effect, mode_id)
+                # Setzt den ausgewählten API-Modus
+                await async_set_mode(self.hass, self._host, mode_id)
+        
+        # Szenario B: Das Licht wurde einfach nur eingeschaltet (ohne Effekt-Wechsel)
+        elif not kwargs:
+            # Falls ein bestimmter Effekt gespeichert war, reaktivieren wir dessen Modus,
+            # ansonsten fallen wir auf Modus 0 ("Zeit (Uhr)") zurück.
+            mode_id = MODE_OPTIONS.get(self._effect, 0)
+            await async_set_mode(self.hass, self._host, mode_id)
 
-        # Falls der Schieberegler bewegt wurde, den neuen HA-Wert (0-255) abfangen
+        # Helligkeit verarbeiten (falls Schieberegler bewegt wurde oder beim Einschalten)
         if ATTR_BRIGHTNESS in kwargs:
             self._brightness = kwargs[ATTR_BRIGHTNESS]
 
-        # Umrechnung des HA-Wertes (0-255) in Prozent (0-100) für die commitSettings-API
+        # Umrechnung des HA-Wertes (0-255) in Prozent (0-100)
         pct_val = int(math.ceil(brightness_to_value(BRIGHTNESS_SCALE, self._brightness)))
 
-        # 2. Auf den nächsten Zehner runden (10er-Schritte: 10, 20, 30, ...)
-        # round(pct_val / 10) * 10 sorgt für das Runden auf den nächsten Zehner
+        # Auf den nächsten Zehner runden
         pct_val = int(round(pct_val / 10.0) * 10)
         
-        # 3. Grenzwerte absichern (API erlaubt nur 10 bis 100)
+        # Grenzwerte absichern
         if pct_val < 10:
             pct_val = 10
         elif pct_val > 100:
             pct_val = 100
 
-        # --- HIER DIE LOG-AUSGABE EINFÜGEN ---
         _LOGGER.info(
-            "Wortuhr Helligkeitsänderung: HA-Wert=%s -> Berechneter API-Prozentwert=%s (Typ: %s)", 
+            "Wortuhr Helligkeitsänderung: HA-Wert=%s -> Berechneter API-Prozentwert=%s", 
             self._brightness, 
-            pct_val,
-            type(pct_val).__name__
+            pct_val
         )
-        # -------------------------------------
 
         # Sendet die Helligkeit an das Gerät
         await async_set_setting(self.hass, self._host, "br", pct_val)

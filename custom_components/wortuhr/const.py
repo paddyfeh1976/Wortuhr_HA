@@ -44,7 +44,7 @@ MODE_OPTIONS = {
     "Grün": 13,
     "Blau": 14,
     "Weiß": 15,
-    "Orange": 16,
+    "Alle an, aktuelle Farbe": 16,
     "IP-Adresse 18": 18,
     "Aus": 17,
     "6": 6,
