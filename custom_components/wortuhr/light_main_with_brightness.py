@@ -1,6 +1,7 @@
 """Light entity for Wortuhr brightness control."""
 from __future__ import annotations
 
+import math
 from typing import Any
 from homeassistant.components.light import LightEntity, ColorMode, ATTR_BRIGHTNESS
 from homeassistant.helpers.restore_state import RestoreEntity
@@ -9,9 +10,12 @@ from homeassistant.const import CONF_HOST, STATE_ON
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.util.color import brightness_to_value
 
 from .const import DOMAIN
 from .services import async_set_mode, async_set_setting
+
+BRIGHTNESS_SCALE = (1, 100)  # Wortuhr brightness scale from 1 to 100
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -59,7 +63,7 @@ class WortuhrMainWithBrightnessLight(LightEntity, RestoreEntity):
         if last_state is not None:
             self._is_on = last_state.state == STATE_ON   
 
-# Hier wird die Helligkeit aus den Attributen des letzten Zustands geladen
+            # Hier wird die Helligkeit aus den Attributen des letzten Zustands geladen
             if ATTR_BRIGHTNESS in last_state.attributes:
                 self._brightness = last_state.attributes[ATTR_BRIGHTNESS]            
 
@@ -70,7 +74,7 @@ class WortuhrMainWithBrightnessLight(LightEntity, RestoreEntity):
         return self._is_on
 
     @property
-    def brightness(self) -> int:
+    def brightness(self) -> int | None:
         return self._brightness
 
     async def async_turn_on(self, **kwargs: Any) -> None:
@@ -84,7 +88,7 @@ class WortuhrMainWithBrightnessLight(LightEntity, RestoreEntity):
         await async_set_mode(self.hass, self._host, 0)
 
         # Umrechnung des HA-Wertes (0-255) in Prozent (0-100) für die commitSettings-API
-        pct_val = int((self._brightness / 255.0) * 100)
+        pct_val = int(math.ceil(brightness_to_value(BRIGHTNESS_SCALE, self._brightness)))
         if pct_val == 0:
             pct_val = 1 # Schutz vor 0%, wenn eingeschaltet wird
             
