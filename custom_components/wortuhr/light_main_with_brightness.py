@@ -8,6 +8,7 @@ from homeassistant.components.light import (
     ColorMode, 
     ATTR_BRIGHTNESS, 
     ATTR_EFFECT,
+    ATTR_RGB_COLOR,
     LightEntityFeature
 )
 from homeassistant.helpers.restore_state import RestoreEntity
@@ -20,6 +21,7 @@ from homeassistant.util.color import brightness_to_value
 
 from .const import DOMAIN, MODE_OPTIONS
 from .services import async_set_mode, async_set_setting
+from .color_mapper import WortuhrColorMapper
 
 import logging
 
@@ -46,8 +48,8 @@ async def async_setup_entry(
 class WortuhrMainWithBrightnessLight(LightEntity, RestoreEntity):
     _attr_has_entity_name = True
     _attr_name = "Wortuhr mit Helligkeit"
-    _attr_color_mode = ColorMode.BRIGHTNESS
-    _attr_supported_color_modes = {ColorMode.BRIGHTNESS}
+    _attr_color_mode = ColorMode.RGB
+    _attr_supported_color_modes = {ColorMode.RGB}
     _attr_icon = "mdi:dots-square"
     _attr_supported_features = LightEntityFeature.EFFECT
 
@@ -65,6 +67,9 @@ class WortuhrMainWithBrightnessLight(LightEntity, RestoreEntity):
         self._brightness = 127 # Startwert (entspricht ca 50%)
         self._is_on = True
         self._effect = "Zeit (Uhr)"
+
+        self._rgb_color = (255, 255, 255)
+        self._color_name = "Weiß"
 
     async def async_added_to_hass(self) -> None:
         """Wird aufgerufen, wenn die Entität zu Home Assistant hinzugefügt wurde."""
@@ -84,6 +89,8 @@ class WortuhrMainWithBrightnessLight(LightEntity, RestoreEntity):
             if ATTR_EFFECT in last_state.attributes:
                 self._effect = last_state.attributes[ATTR_EFFECT]                        
 
+            if ATTR_RGB_COLOR in last_state.attributes:
+                self._rgb_color = last_state.attributes[ATTR_RGB_COLOR]
         # 2. Hier könntest du auch z. B. Dispatcher-Signale oder Webhook-Event           
 
     @property
@@ -93,6 +100,11 @@ class WortuhrMainWithBrightnessLight(LightEntity, RestoreEntity):
     @property
     def brightness(self) -> int | None:
         return self._brightness
+    
+    @property
+    def rgb_color(self) -> tuple[int, int, int] | None:
+        """Gibt die aktuell gesetzte RGB-Farbe an Home Assistant zurück."""
+        return self._rgb_color
 
     @property
     def effect_list(self) -> list[str] | None:
@@ -125,6 +137,26 @@ class WortuhrMainWithBrightnessLight(LightEntity, RestoreEntity):
             # ansonsten fallen wir auf Modus 0 ("Zeit (Uhr)") zurück.
             mode_id = MODE_OPTIONS.get(self._effect, 0)
             await async_set_mode(self.hass, self._host, mode_id)
+
+        # FARBWAHL VERARBEITEN
+        if ATTR_RGB_COLOR in kwargs:
+            requested_rgb = kwargs[ATTR_RGB_COLOR]
+            
+            # Nutze den ausgelagerten Mapper für das euklidische Matching
+            color_name, color_id, matched_rgb = WortuhrColorMapper.find_closest_color(requested_rgb)
+            
+            # Wir speichern das exakt gematchte RGB-Tupel, damit das HA-UI auf den 
+            # Punkt "springt", den die Uhr real darstellen kann.
+            self._rgb_color = matched_rgb
+            self._color_name = color_name
+            
+            _LOGGER.info(
+                "Wortuhr Farbe geändert: Wunsch-RGB=%s -> Gematcht auf: %s (API ID: %s)", 
+                requested_rgb, color_name, color_id
+            )
+            
+            # Sendet den Farb-Index an die Uhr via commitSettings
+            await async_set_setting(self.hass, self._host, "color", color_id)
 
         # Helligkeit verarbeiten (falls Schieberegler bewegt wurde oder beim Einschalten)
         if ATTR_BRIGHTNESS in kwargs:
