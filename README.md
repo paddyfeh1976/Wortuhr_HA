@@ -11,7 +11,7 @@ Eine Home Assistant Integration zur Steuerung der [Wortuhr](https://www.wortuhr.
 - 🎯 **Texte & Events anzeigen**: Beliebige Texte mit Farben und Animationen auf der Wortuhr anzeigen
 - 🎵 **Audio abspielen**: Sounddateien von der SD-Karte abspielen (Wenn Audiomodul vorhanden)
 - 🎭 **Modi wechseln**: Zwischen 21 verschiedenen Display-Modi umschalten (Zeit, Wetter, Datum, etc.)
-- ⚙️ **Einstellungen**: Alarme, Helligkeit, Farben und mehr konfigurieren
+- ⚙️ **Einstellungen**: ~~Alarme~~, ~~Helligkeit~~, Farben und mehr konfigurieren
 - 🔧 **Geräteverwaltung**: Reboot, WiFi-Reset, MP3-Reset
 
 ## Installation
@@ -22,9 +22,8 @@ Eine Home Assistant Integration zur Steuerung der [Wortuhr](https://www.wortuhr.
 2. Klicke auf **"Custom repositories"** (drei Punkte)
 3. Füge folgende URL ein: `https://github.com/pfehr/Wortuhr_HA`
 4. Kategorie: **Integration**
-5. Klicke auf "Wortuhr"
-6. **Install** klicken
-7. Home Assistant neu starten
+5. Suche nach **Wortuhr** und installiere die Integration
+6. Starte Home Assistant neu
 
 ### Manuell
 
@@ -34,32 +33,30 @@ Eine Home Assistant Integration zur Steuerung der [Wortuhr](https://www.wortuhr.
 
 ## Konfiguration
 
-Nach der Installation:
-
 1. Gehe zu **Einstellungen → Geräte & Services → Integrationen**
-2. Klicke auf **"Neue Integration erstellen"** und suche **"Wortuhr"**
+2. Klicke auf **"Integration hinzufügen"** und suche **"Wortuhr"**
 3. Gib die **IP-Adresse** deiner Wortuhr ein
-4. Die Verbindung wird getestet und gespeichert
+4. Speichere die Integration
 
-Die Wortuhr-IP muss sich im gleichen Netz wie dein Home Assistant befinden.
+> Die Wortuhr-IP muss sich im gleichen Netzwerk wie Home Assistant befinden.
 
-## Verfügbare Services
+## Unterstützte Services
 
-Nach der Konfiguration stehen folgende Services zur Verfügung:
+Die Integration registriert folgende Services:
 
 ### `wortuhr.show_text`
-Zeigt einen Text mit optionalen Ankündigungssounds an.
+Zeigt Text mit optionaler Farbe und Buzzer an.
 
 ```yaml
 service: wortuhr.show_text
 data:
   text: "Hallo Welt"
   color: 1           # 0-24
-  buzzer: 2          # Anzahl der Töne
+  buzzer: 2
 ```
 
 ### `wortuhr.show_event`
-Zeigt ein Event mit Vorher- und Nachher-Animation an.
+Zeigt ein Event mit optionalen Animationen und Audio an.
 
 ```yaml
 service: wortuhr.show_event
@@ -71,17 +68,49 @@ data:
   postani: "MUELL_GELB"
 ```
 
+### `wortuhr.play_audio`
+Spielt eine Sounddatei von der SD-Karte ab.
+
+```yaml
+service: wortuhr.play_audio
+data:
+  soundfile: 819
+  volume: 100
+```
+
 ### `wortuhr.set_mode`
-Wechselt zu einem bestimmten Display-Modus.
+Schaltet den Display-Modus um.
 
 ```yaml
 service: wortuhr.set_mode
 data:
-  mode: 2            # 0=Zeit, 2=Wochentag, 3=Datum, 8=Wetter, etc.
-  sound: true        # Ankündigungstext
+  mode: 2
+  sound: true
 ```
 
-**Verfügbare Modi:**
+### `wortuhr.reboot`
+Startet die Wortuhr neu.
+
+```yaml
+service: wortuhr.reboot
+```
+
+### `wortuhr.wifi_reset`
+Setzt die WiFi-Konfiguration zurück.
+
+```yaml
+service: wortuhr.wifi_reset
+```
+
+### `wortuhr.mp3_reset`
+Setzt den MP3-Player zurück.
+
+```yaml
+service: wortuhr.mp3_reset
+```
+
+## Verfügbare Moduswerte
+
 - `0` = Zeit (Uhr)
 - `1` = Ansage
 - `2` = Wochentag
@@ -96,40 +125,19 @@ data:
 - `18` = Timer
 - `20` = Aus
 
-### `wortuhr.play_audio`
-Spielt eine Sounddatei ab.
+## Geräte-Steuerelemente
 
-```yaml
-service: wortuhr.play_audio
-data:
-  soundfile: 819     # Soundnummer
-  volume: 100        # 0-100 (0 = aktuelle Lautstärke)
-```
+Nach der Einrichtung stehen in der Geräteansicht typische Entitäten bereit:
 
-### `wortuhr.reboot`
-Startet die Wortuhr neu.
-
-```yaml
-service: wortuhr.reboot
-```
-
-### `wortuhr.wifi_reset`
-Setzt die WiFi-Einstellungen zurück (AP-Mode).
-
-```yaml
-service: wortuhr.wifi_reset
-```
-
-### `wortuhr.mp3_reset`
-Setzt den MP3-Player zurück.
-
-```yaml
-service: wortuhr.mp3_reset
-```
+- `button`-Entitäten für Reboot, WiFi-Reset, MP3-Reset und Nachricht anzeigen
+- `select`-Entitäten für Moduswahl, Textfarbe, LED-Farben, Hintergrundoptionen, Animationen und mehr
+- `text`-Entitäten für Meldungen und ggf. Hintergrundfarbe
+- `switch`-Entitäten für automatische Helligkeit, Ein/Aus-Funktionen und weitere Einstellungen
+- `light`-Entitäten für die Wortuhrbeleuchtung
 
 ## Beispiele
 
-### Automation: Mülltonnen-Erinnerung
+### Automation: Erinnerung an die Gelbe Tonne
 
 ```yaml
 automation:
@@ -170,22 +178,22 @@ script:
           sound: false
 ```
 
-## Bekannte Limitierungen
+## Bekannte Einschränkungen
 
-- Die Wortuhr muss sich im gleichen WLAN-Netz wie Home Assistant befinden
-- Einige Modi können je nach Hardware-Konfiguration verschoben sein (Ausprobieren hilft)
-- Die HTTP-API hat keine Authentifizierung
+- Die Wortuhr muss sich im gleichen Netzwerk wie Home Assistant befinden.
+- Die HTTP-API unterstützt aktuell keine Authentifizierung.
+- Einige Auswahlwerte und Modi können von deiner Wortuhr-Firmware abweichen.
 
 ## Fehlerbehebung
 
-**Problem:** "Verbindung zur Wortuhr fehlgeschlagen"
-- Stelle sicher, dass die Wortuhr im gleichen WLAN wie Home Assistant ist
-- Überprüfe die IP-Adresse in der Konfiguration
-- Starte die Wortuhr neu
+**Problem:** Integration lässt sich nicht hinzufügen
+- Prüfe die eingegebene IP-Adresse
+- Stelle sicher, dass die Wortuhr erreichbar ist
+- Home Assistant neu starten
 
-**Problem:** Service funktioniert nicht
-- Überprüfe die Heimautomation-Logs: **Einstellungen → Protokolle**
-- Stelle sicher, dass alle erforderlichen Parameter angegeben sind
+**Problem:** Serviceaufrufe funktionieren nicht
+- Prüfe die Home Assistant-Protokolle
+- Vergleiche die Serviceparameter mit den Beispielen oben
 
 ## Support
 
