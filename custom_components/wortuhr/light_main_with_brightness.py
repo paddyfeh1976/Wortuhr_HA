@@ -156,7 +156,7 @@ class WortuhrMainWithBrightnessLight(LightEntity, RestoreEntity):
             )
             
             # Sendet den Farb-Index an die Uhr via commitSettings
-            await async_set_setting(self.hass, self._host, "color", color_id)
+            await async_set_setting(self.hass, self._host, "co", color_id)
 
         # Helligkeit verarbeiten (falls Schieberegler bewegt wurde oder beim Einschalten)
         if ATTR_BRIGHTNESS in kwargs:
