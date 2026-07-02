@@ -13,7 +13,7 @@ from homeassistant.components.light import (
 )
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_HOST, STATE_ON
+from homeassistant.const import CONF_HOST, STATE_ON, STATE_OFF
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
