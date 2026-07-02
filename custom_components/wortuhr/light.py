@@ -11,8 +11,8 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
-from .light_main import WortuhrMainLight
-from .light_main_with_brightness import WortuhrMainWithBrightnessLight
+from .light_minutes import WortuhrMainLight
+from .light_main import WortuhrMinutesLight
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -30,6 +30,6 @@ async def async_setup_entry(
     async_add_entities(
         [
             WortuhrMainLight(hass, config_entry, device_info, host), 
-            WortuhrMainWithBrightnessLight(hass, config_entry, device_info, host)
+            WortuhrMinutesLight(hass, config_entry, device_info, host)
         ]
     )
