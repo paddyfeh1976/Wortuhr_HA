@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_HOST
+from homeassistant.const import CONF_HOST, EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -32,7 +32,8 @@ async def async_setup_entry(
 
 class WortuhrPreAnimationSelect(SelectEntity):
     _attr_has_entity_name = True
-    _attr_name = "Voranimation"
+    _attr_name = "1. Event Voranimation"
+    _attr_entity_category = EntityCategory.CONFIG
     _attr_options = list(EVENT_ANIMATION_OPTIONS.keys())
     _attr_icon = "mdi:animation-play"
 

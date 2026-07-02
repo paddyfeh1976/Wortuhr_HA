@@ -29,7 +29,6 @@ async def async_setup_entry(
         [
             WortuhrAutoBrightnessSwitch(hass, config_entry, device_info, host),
             WortuhrItIsSwitch(hass, config_entry, device_info, host),
-            WortuhrOnOffSwitch(hass, config_entry, device_info, host),
         ]
     )
 

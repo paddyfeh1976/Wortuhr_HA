@@ -41,7 +41,7 @@ async def async_setup_entry(
 class WortuhrMinutesLight(LightEntity, RestoreEntity):
     _attr_has_entity_name = True
     _attr_name = "Minuten Punkte"
-    _attr_icon = "mdi:clock-digital"
+    _attr_icon = "mdi:led-strip"
     
     _attr_color_mode = ColorMode.RGB
     _attr_supported_color_modes = {ColorMode.RGB}

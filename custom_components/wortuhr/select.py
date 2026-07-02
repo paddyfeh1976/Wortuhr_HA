@@ -39,13 +39,10 @@ async def async_setup_entry(
     )
 
     async_add_entities(
-        [
-            WortuhrModeSelect(hass, config_entry, device_info, host),
+        [            
             WortuhrMessageTextColorSelect(hass, config_entry, device_info, host),
             WortuhrPreAnimationSelect(hass, config_entry, device_info, host),
             WortuhrPostAnimationSelect(hass, config_entry, device_info, host),
-            WortuhrLedColorSelect(hass, config_entry, device_info, host),
-            WortuhrMinuteLedColorSelect(hass, config_entry, device_info, host),
             WortuhrBackgroundOptionSelect(hass, config_entry, device_info, host),  
             WortuhrLedChangeSelect(hass, config_entry, device_info, host),
             WortuhrMinuteLedChangeSelect(hass, config_entry, device_info, host),

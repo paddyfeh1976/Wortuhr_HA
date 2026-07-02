@@ -31,7 +31,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
 class WortuhrShowEventButton(ButtonEntity):
     _attr_has_entity_name = True
     _attr_name = "Event anzeigen"
-    _attr_icon = "mdi:message-text"
+    _attr_icon = "mdi:calendar"
 
     def __init__(self, hass: HomeAssistant, config_entry: ConfigEntry, device_info: DeviceInfo, host: str) -> None:
         self.hass = hass

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_HOST
+from homeassistant.const import CONF_HOST, EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -32,7 +32,8 @@ async def async_setup_entry(
 
 class WortuhrMessageTextColorSelect(SelectEntity):
     _attr_has_entity_name = True
-    _attr_name = "Nachricht Farbe"
+    _attr_name = "2. Event/Nachricht Textfarbe"
+    _attr_entity_category = EntityCategory.CONFIG
     _attr_options = list(COLOR_OPTIONS.keys())
     _attr_icon = "mdi:format-color-text"
 

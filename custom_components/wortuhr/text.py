@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from homeassistant.components.text import TextEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_HOST
+from homeassistant.const import CONF_HOST, EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -40,7 +40,8 @@ class WortuhrMessageText(TextEntity):
     """Text entity to hold a message for show_text."""
 
     _attr_has_entity_name = True
-    _attr_name = "Nachricht Text"
+    _attr_name = "3. Event/Nachricht Text"
+    _attr_entity_category = EntityCategory.CONFIG
 
     def __init__(
         self,
