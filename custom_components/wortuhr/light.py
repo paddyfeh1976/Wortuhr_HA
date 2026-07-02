@@ -11,8 +11,8 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
-from .light_minutes import WortuhrMainLight
-from .light_main import WortuhrMinutesLight
+from .light_main import WortuhrMainLight
+from .light_minutes import WortuhrMinutesLight
 
 async def async_setup_entry(
     hass: HomeAssistant,
