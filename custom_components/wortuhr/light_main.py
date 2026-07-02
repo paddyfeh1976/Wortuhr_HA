@@ -18,6 +18,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util.color import brightness_to_value
+from homeassistant.helpers import entity_registry as er
 
 from .const import DOMAIN, MODE_OPTIONS
 from .services import async_set_mode, async_set_setting
@@ -43,7 +44,7 @@ async def async_setup_entry(
         model="HTTP API",
         configuration_url=f"http://{host}",
     )
-    async_add_entities([WortuhrMainLight(hass, config_entry, device_info, host)])
+    async_add_entities([WortuhrMainLight(hass, config_entry, device_info, host, config_entry.entry_id)])
 
 class WortuhrMainLight(LightEntity, RestoreEntity):
     _attr_has_entity_name = True
@@ -63,13 +64,15 @@ class WortuhrMainLight(LightEntity, RestoreEntity):
         self.hass = hass
         self._host = host
         self._attr_device_info = device_info
-        self._attr_unique_id = f"wortuhr_main_{config_entry.entry_id}"
+        self._entry_id = config_entry.entry_id
+        self._attr_unique_id = f"wortuhr_main_{self._entry_id}"
         self._brightness = 127 # Startwert (entspricht ca 50%)
         self._is_on = True
         self._effect = "Zeit (Uhr)"
 
         self._rgb_color = (255, 255, 255)
         self._color_name = "Weiß"
+        self._target_minutes_unique_id = f"wortuhr_minutes_{self._entry_id}"
 
     async def async_added_to_hass(self) -> None:
         """Wird aufgerufen, wenn die Entität zu Home Assistant hinzugefügt wurde."""
@@ -157,6 +160,26 @@ class WortuhrMainLight(LightEntity, RestoreEntity):
             
             # Sendet den Farb-Index an die Uhr via commitSettings
             await async_set_setting(self.hass, self._host, "co", color_id)
+
+            # Wir holen uns die Entity Registry von Home Assistant
+            entity_registry = er.async_get(self.hass)
+            
+            # Wir suchen die aktuelle Entity ID anhand der unveränderlichen Unique ID der Minuten
+            minutes_entry = entity_registry.async_get_entity_id(
+                "light", DOMAIN, self._target_minutes_unique_id
+            )
+
+            if minutes_entry:
+                # Jetzt haben wir die echte aktuelle Entity ID (egal wie sie vom User benannt wurde!)
+                minutes_state = self.hass.states.get(minutes_entry)
+
+                # Wenn die Minutenpunkte-Lampe in HA ausgeschaltet ist, steuern wir sie mit
+                if minutes_state is not None and minutes_state.state == STATE_OFF:
+                    _LOGGER.info(
+                        "Minuten Punkte (%s) sind ausgeschaltet. Hauptlicht übernimmt die Farbe (API ID: %s via 'cco')", 
+                        minutes_entry, color_id
+                    )
+                    await async_set_setting(self.hass, self._host, "cco", color_id)
 
         # Helligkeit verarbeiten (falls Schieberegler bewegt wurde oder beim Einschalten)
         if ATTR_BRIGHTNESS in kwargs:

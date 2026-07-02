@@ -56,7 +56,8 @@ class WortuhrMinutesLight(LightEntity, RestoreEntity):
         self.hass = hass
         self._host = host
         self._attr_device_info = device_info
-        self._attr_unique_id = f"wortuhr_minutes_{config_entry.entry_id}"
+        self._entry_id = config_entry.entry_id
+        self._attr_unique_id = f"wortuhr_minutes_{self._entry_id}"
         self._is_on = True
         self._rgb_color = (255, 255, 255)
         self._color_name = "Weiß"
