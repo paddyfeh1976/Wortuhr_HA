@@ -30,6 +30,6 @@ async def async_setup_entry(
     async_add_entities(
         [
             WortuhrMainLight(hass, config_entry, device_info, host), 
-           # WortuhrMinutesLight(hass, config_entry, device_info, host)
+            WortuhrMinutesLight(hass, config_entry, device_info, host)
         ]
     )
