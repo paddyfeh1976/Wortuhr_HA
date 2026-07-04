@@ -44,9 +44,11 @@ show_event:
       name: Vor-Animation (Pre-Animation)
       description: Die Animation, die VOR dem Text abgespielt wird.
       required: false
+      # Durch das Entfernen von 'options: []' akzeptiert die GUI das Feld jetzt als Freitext/Dropdown-Hülle
       selector:
         select:
           options: []
+          custom_value: true
     postani:
       name: Nach-Animation (Post-Animation)
       description: Die Animation, die NACH dem Text abgespielt wird.
@@ -54,6 +56,7 @@ show_event:
       selector:
         select:
           options: []
+          custom_value: true
 
 play_audio:
   fields:
