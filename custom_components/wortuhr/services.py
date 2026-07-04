@@ -248,14 +248,17 @@ async def async_setup_services(hass: HomeAssistant) -> None:
     # Dynamisches Validierungs-Schema für das GUI-Dropdown
     SHOW_EVENT_SCHEMA = vol.Schema(
         {
-            vol.Optional("device_id"): cv.string, # Wird von HA für das Target benötigt
+            vol.Optional("device_id"): vol.All(cv.ensure_list, [cv.string]), # Erlaubt ein oder mehrere Geräte-IDs aus dem Target
             vol.Optional("text"): cv.string,
-            vol.Optional("rgb_color"): vol.All(vol.ExactSequence([cv.uint8, cv.uint8, cv.uint8]), vol.Coerce(tuple)),
+            vol.Optional("rgb_color"): vol.All(
+                vol.ExactSequence([vol.All(vol.Coerce(int), vol.Range(min=0, max=255))] * 3),
+                vol.Coerce(tuple)
+            ),
             vol.Optional("audio"): cv.positive_int,
             vol.Optional("preani"): vol.In(animation_list),
             vol.Optional("postani"): vol.In(animation_list),
         }
-    )     
+    )  
 
     hass.services.async_register(
         DOMAIN,
