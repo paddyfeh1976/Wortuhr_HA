@@ -1,13 +1,23 @@
 show_text:
+  name: Text anzeigen
+  description: Zeigt einen Text auf der Wortuhr an.
   fields:
     host:
+      name: Host
+      description: IP-Adresse oder Hostname der Wortuhr.
       example: 192.168.178.50
     text:
+      name: Text
+      description: Der anzuzeigende Text.
       required: true
       example: Hallo Welt
     color:
+      name: Farbe
+      description: Farb-Index der Wortuhr.
       example: 1
     buzzer:
+      name: Summer
+      description: Aktiviert oder deaktiviert den Summer.
       example: 2
 
 show_event:

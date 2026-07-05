@@ -157,13 +157,15 @@ def _get_host(hass: HomeAssistant, call: ServiceCall) -> str:
 
 
 async def async_setup_services(hass: HomeAssistant):
+    if hass.services.has_service(DOMAIN, "show_text"):
+        return
 
     async def show_text(call: ServiceCall):
         host = _get_host(hass, call)
         await async_show_text(
             hass,
             host,
-            call.data["text"],
+            call.data.get("text", ""),
             call.data.get("color", 0),
             call.data.get("buzzer", 0),
         )
