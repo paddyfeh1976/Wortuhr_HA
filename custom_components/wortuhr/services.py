@@ -170,14 +170,24 @@ async def async_setup_services(hass: HomeAssistant):
 
     async def show_event(call: ServiceCall):
         host = _get_host(hass, call)
+
+        text = call.data.get("text", "")
+        color = call.data.get("color", 0)
+        audio = call.data.get("audio", 0)
+        preani = call.data.get("preani", "")
+        postani = call.data.get("postani", "")
+
+        if "rgb_color" in call.data and call.data["rgb_color"]:
+            color = 0
+
         await async_show_event(
             hass,
             host,
-            call.data["text"],
-            call.data.get("color", 0),
-            call.data.get("preani", ""),
-            call.data.get("postani", ""),
-            call.data.get("audio", 0),
+            text,
+            color,
+            preani,
+            postani,
+            audio,
         )
 
     async def play_audio(call: ServiceCall):
