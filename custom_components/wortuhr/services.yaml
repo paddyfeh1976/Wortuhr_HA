@@ -11,18 +11,47 @@ show_text:
       example: 2
 
 show_event:
+  name: Event anzeigen
+  description: Startet eine Event-Anzeige mit Vor-/Nachanimation, Text, Audio und Farbe.
+  target:
+    device:
+      integration: wortuhr
   fields:
-    host:
     text:
-      required: true
-    color:
-      example: 1
+      name: Text
+      description: Der Event-Text, der über die Uhr laufen soll (optional).
+      required: false
+      example: Geburtstag!
+      selector:
+        text:
+    rgb_color:
+      name: Farbe
+      description: Wähle eine Farbe über den Farbkreis aus. Der Code sucht die passendste LED-Farbe heraus.
+      required: false
+      default: [255, 255, 255]
+      selector:
+        color_rgb: {}
     audio:
+      name: Audio-Datei ID
+      description: ID der abzuspielenden MP3-Datei (z. B. 701).
       example: 701
+      selector:
+        number:
+          min: 0
+          max: 999
+          mode: box
     preani:
-      example: HERZ
+      name: Vor-Animation (Pre-Animation)
+      description: Die Animation, die VOR dem Text abgespielt wird.
+      required: false
+      selector:
+        text:
     postani:
-      example: HERZ
+      name: Nach-Animation (Post-Animation)
+      description: Die Animation, die NACH dem Text abgespielt wird.
+      required: false
+      selector:
+        text:
 
 play_audio:
   fields:
