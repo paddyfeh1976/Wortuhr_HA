@@ -6,7 +6,8 @@
         "title": "Wortuhr einrichten",
         "description": "Verbindung zur Wortuhr herstellen",
         "data": {
-          "host": "IP-Adresse der Wortuhr"
+          "host": "IP-Adresse der Wortuhr",
+          "scan_interval": "Abfrageintervall (in Sekunden)"
         }
       }
     },

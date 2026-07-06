@@ -1,6 +1,6 @@
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.const import CONF_HOST
+from homeassistant.const import CONF_HOST, CONF_SCAN_INTERVAL
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
@@ -18,6 +18,7 @@ class WortuhrConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         if user_input is not None:
             host = user_input.get(CONF_HOST)
+            scan_interval = user_input.get(CONF_SCAN_INTERVAL, 60)
 
             # Prüfe Verbindung zum Gerät
             if not await self._check_connection(host):
@@ -29,12 +30,18 @@ class WortuhrConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
                 return self.async_create_entry(
                     title=f"Wortuhr ({host})",
-                    data={CONF_HOST: host},
+                    data={
+                        CONF_HOST: host,
+                        CONF_SCAN_INTERVAL: scan_interval,
+                    },
                 )
 
         data_schema = vol.Schema(
             {
                 vol.Required(CONF_HOST, default="192.168.178.79"): str,
+                vol.Required(CONF_SCAN_INTERVAL, default=60): vol.All(
+                    vol.Coerce(int), vol.Range(min=5, max=3600)
+                ),
             }
         )
 
@@ -49,9 +56,7 @@ class WortuhrConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Prüfe die Verbindung zur Wortuhr."""
         try:
             session = async_get_clientsession(self.hass)
-            async with session.get(
-                f"http://{host}/control?mode=0&sound=0", timeout=5
-            ) as response:
+            async with session.get(f"http://{host}/apidata", timeout=5) as response:
                 return response.status == 200
         except Exception:
             return False
