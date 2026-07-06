@@ -94,7 +94,7 @@ SENSOR_DESCRIPTIONS: tuple[WortuhrSensorEntityDescription, ...] = (
         key="ldr_brightness",
         name="LED Helligkeit",
         native_unit_of_measurement=PERCENTAGE,
-        state_class=SensorStateClass.BRIGHTNESS,
+        state_class=SensorStateClass.MEASUREMENT,
         value_fn=lambda data: data.get("ldr", {}).get("brightness"),
     ),
     WortuhrSensorEntityDescription(
