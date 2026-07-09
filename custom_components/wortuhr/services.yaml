@@ -93,3 +93,29 @@ wifi_reset:
 mp3_reset:
   fields:
     host:
+
+notify:
+  name: Nachricht senden
+  description: Sendet eine Nachricht an die Wortuhr über die Notify-Plattform.
+  fields:
+    message:
+      name: Nachricht
+      description: Der Text, der auf der Wortuhr angezeigt werden soll.
+      required: true
+      example: Hallo Welt
+      selector:
+        text:
+    title:
+      name: Titel
+      description: Optionaler Titel, der vor der Nachricht angezeigt wird.
+      required: false
+      example: Hinweis
+      selector:
+        text:
+    data:
+      name: Daten
+      description: Zusätzliche Optionen wie Farbe und Summer.
+      required: false
+      example:
+        color: 5
+        buzzer: 1
