@@ -157,7 +157,7 @@ def _get_host(hass: HomeAssistant, call: ServiceCall) -> str:
 
 
 async def async_setup_services(hass: HomeAssistant):
-    if hass.services.has_service(DOMAIN, "show_text"):
+    if hass.services.has_service(DOMAIN, "show_text") and hass.services.has_service("notify", "wortuhr"):
         return
 
     async def show_text(call: ServiceCall):
@@ -210,6 +210,17 @@ async def async_setup_services(hass: HomeAssistant):
             bool(call.data.get("sound", False)),
         )
 
+    async def notify_wortuhr(call: ServiceCall):
+        host = _get_host(hass, call)
+        message = call.data.get("message", call.data.get("text", ""))
+        await async_show_text(
+            hass,
+            host,
+            message,
+            call.data.get("color", 0),
+            call.data.get("buzzer", 0),
+        )
+
     async def reboot(call: ServiceCall):
         host = _get_host(hass, call)
         await async_reboot(hass, host)
@@ -232,6 +243,12 @@ async def async_setup_services(hass: HomeAssistant):
         DOMAIN,
         "show_event",
         show_event
+    )
+
+    hass.services.async_register(
+        "notify",
+        "wortuhr",
+        notify_wortuhr
     )
 
     hass.services.async_register(

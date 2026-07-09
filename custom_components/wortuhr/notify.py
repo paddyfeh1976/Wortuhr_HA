@@ -32,6 +32,17 @@ class WortuhrNotificationEntity(NotifyEntity):
         self._host = entry.data.get(CONF_HOST, "")
         self._attr_name = "Wortuhr"
         self._attr_unique_id = f"{DOMAIN}_{entry.entry_id}_notify"
+        self._attr_entity_id = f"notify.{DOMAIN}"
+        self._attr_has_entity_name = True
+        self._attr_should_poll = False
+
+    @property
+    def entity_id(self) -> str:
+        return self._attr_entity_id
+
+    @entity_id.setter
+    def entity_id(self, value: str) -> None:
+        self._attr_entity_id = value
 
     @property
     def available(self) -> bool:
