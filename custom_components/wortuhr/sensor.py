@@ -112,6 +112,7 @@ SENSOR_DESCRIPTIONS: tuple[WortuhrSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
+        entity_registry_enabled_default=False, # <--- HIER DEAKTIVIERT!
         value_fn=lambda data: data.get("bme280", {}).get("temperature"),
     ),
     WortuhrSensorEntityDescription(
@@ -120,6 +121,7 @@ SENSOR_DESCRIPTIONS: tuple[WortuhrSensorEntityDescription, ...] = (
         native_unit_of_measurement=PERCENTAGE,
         device_class=SensorDeviceClass.HUMIDITY,
         state_class=SensorStateClass.MEASUREMENT,
+        entity_registry_enabled_default=False, # <--- HIER DEAKTIVIERT!
         value_fn=lambda data: data.get("bme280", {}).get("humidity"),
     ),
     WortuhrSensorEntityDescription(
@@ -128,6 +130,7 @@ SENSOR_DESCRIPTIONS: tuple[WortuhrSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfPressure.HPA,
         device_class=SensorDeviceClass.ATMOSPHERIC_PRESSURE,
         state_class=SensorStateClass.MEASUREMENT,
+        entity_registry_enabled_default=False, # <--- HIER DEAKTIVIERT!
         value_fn=lambda data: data.get("bme280", {}).get("pressure"),
     ),
     WortuhrSensorEntityDescription(
@@ -136,6 +139,7 @@ SENSOR_DESCRIPTIONS: tuple[WortuhrSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfPressure.HPA,
         device_class=SensorDeviceClass.ATMOSPHERIC_PRESSURE,
         state_class=SensorStateClass.MEASUREMENT,
+        entity_registry_enabled_default=False, # <--- HIER DEAKTIVIERT!
         value_fn=lambda data: data.get("bme280", {}).get("pressure_rel"),
     ),
     WortuhrSensorEntityDescription(
@@ -143,6 +147,7 @@ SENSOR_DESCRIPTIONS: tuple[WortuhrSensorEntityDescription, ...] = (
         name="Luftdruck Tendenz",
         native_unit_of_measurement=UnitOfPressure.HPA,
         state_class=SensorStateClass.MEASUREMENT,
+        entity_registry_enabled_default=False, # <--- HIER DEAKTIVIERT!
         value_fn=lambda data: data.get("bme280", {}).get("pressure_diff"),
     ),
     # --- OPENWEATHERMAP SENSOR ---
@@ -152,6 +157,7 @@ SENSOR_DESCRIPTIONS: tuple[WortuhrSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
+        entity_registry_enabled_default=False, # <--- HIER DEAKTIVIERT!
         value_fn=lambda data: data.get("openweather", {}).get("temperature"),
     ),
     WortuhrSensorEntityDescription(
@@ -160,6 +166,7 @@ SENSOR_DESCRIPTIONS: tuple[WortuhrSensorEntityDescription, ...] = (
         native_unit_of_measurement=PERCENTAGE,
         device_class=SensorDeviceClass.HUMIDITY,
         state_class=SensorStateClass.MEASUREMENT,
+        entity_registry_enabled_default=False, # <--- HIER DEAKTIVIERT!
         value_fn=lambda data: data.get("openweather", {}).get("humidity"),
     ),
     WortuhrSensorEntityDescription(
@@ -168,6 +175,7 @@ SENSOR_DESCRIPTIONS: tuple[WortuhrSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfPressure.HPA,
         device_class=SensorDeviceClass.ATMOSPHERIC_PRESSURE,
         state_class=SensorStateClass.MEASUREMENT,
+        entity_registry_enabled_default=False, # <--- HIER DEAKTIVIERT!
         value_fn=lambda data: data.get("openweather", {}).get("pressure"),
     ),
     WortuhrSensorEntityDescription(
@@ -176,6 +184,7 @@ SENSOR_DESCRIPTIONS: tuple[WortuhrSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfSpeed.METERS_PER_SECOND,
         device_class=SensorDeviceClass.WIND_SPEED,
         state_class=SensorStateClass.MEASUREMENT,
+        entity_registry_enabled_default=False, # <--- HIER DEAKTIVIERT!
         value_fn=lambda data: data.get("openweather", {}).get("windspeed"),
     ),
     # --- SONNE ---
@@ -183,6 +192,7 @@ SENSOR_DESCRIPTIONS: tuple[WortuhrSensorEntityDescription, ...] = (
         key="sun_sunrise",
         name="Sonnenaufgang",
         device_class=SensorDeviceClass.TIMESTAMP,
+        entity_registry_enabled_default=False, # <--- HIER DEAKTIVIERT!
         value_fn=lambda data: datetime.fromtimestamp(
             data.get("sun", {}).get("sunrise"), timezone.utc
         ) if data.get("sun", {}).get("sunrise") else None,
@@ -191,6 +201,7 @@ SENSOR_DESCRIPTIONS: tuple[WortuhrSensorEntityDescription, ...] = (
         key="sun_sunset",
         name="Sonnenuntergang",
         device_class=SensorDeviceClass.TIMESTAMP,
+        entity_registry_enabled_default=False, # <--- HIER DEAKTIVIERT!
         value_fn=lambda data: datetime.fromtimestamp(
             data.get("sun", {}).get("sunset"), timezone.utc
         ) if data.get("sun", {}).get("sunset") else None,
