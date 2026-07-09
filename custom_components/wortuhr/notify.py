@@ -51,9 +51,11 @@ class WortuhrNotificationEntity(NotifyEntity):
     @property
     def device_info(self) -> dict[str, Any]:
         return {
-            "identifiers": {(DOMAIN, self._entry.entry_id)},
+            "identifiers": {(DOMAIN, self._host or self._entry.entry_id)},
             "name": "Wortuhr",
             "manufacturer": "Wortuhr",
+            "model": "HTTP API",
+            "configuration_url": f"http://{self._host}" if self._host else None,
         }
 
     async def async_send_message(
