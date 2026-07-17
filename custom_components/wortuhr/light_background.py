@@ -93,7 +93,7 @@ class WortuhrBackgroundLight(LightEntity, RestoreEntity):
         
         # Erzeuge den Hex-String (z.B. "#1a00bc") für die API
         hex_color = color_rgb_to_hex(self._rgb_color[0], self._rgb_color[1], self._rgb_color[2])
-        await async_set_setting(self.hass, self._host, "Bgc", hex_color.upper())
+        await async_set_setting(self.hass, self._host, "Bgc", "#" + hex_color.upper())
 
         # 2. Synchronisation: Wenn das Select auf "Aus" steht, schalte es auf "Immer"
         select_entity_id = async_get_entity_id_by_unique_id(
