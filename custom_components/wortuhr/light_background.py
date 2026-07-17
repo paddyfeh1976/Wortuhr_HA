@@ -9,10 +9,10 @@ from homeassistant.components.light import (
     ColorMode, 
     ATTR_RGB_COLOR
 )
-from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, STATE_ON
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util.color import color_rgb_to_hex
@@ -44,7 +44,6 @@ class WortuhrBackgroundLight(LightEntity, RestoreEntity):
     _attr_name = "Hintergrund Farbe"
     _attr_icon = "mdi:palette"
     _attr_supported_features = 0
-
     _attr_color_mode = ColorMode.RGB
     _attr_supported_color_modes = {ColorMode.RGB}
 
@@ -67,27 +66,20 @@ class WortuhrBackgroundLight(LightEntity, RestoreEntity):
         self._target_select_unique_id = f"wortuhr_background_option_{self._entry_id}"
 
     async def async_added_to_hass(self) -> None:
-        """Wird aufgerufen, wenn die Entität zu Home Assistant hinzugefügt wurde."""
         await super().async_added_to_hass()
-        
+
         last_state = await self.async_get_last_state()
         if last_state is not None:
-            self._is_on = last_state.state == STATE_ON   
+            self._is_on = last_state.state == STATE_ON
 
             if ATTR_RGB_COLOR in last_state.attributes:
-                self._rgb_color = tuple(last_state.attributes[ATTR_RGB_COLOR])
+                rgb_value = last_state.attributes[ATTR_RGB_COLOR]
+                if isinstance(rgb_value, (list, tuple)) and len(rgb_value) == 3:
+                    self._rgb_color = tuple(int(v) for v in rgb_value)
 
     @property
     def is_on(self) -> bool:
         return self._is_on
-
-    @property
-    def color_mode(self) -> ColorMode:
-        return ColorMode.RGB if self._is_on else ColorMode.OFF
-
-    @property
-    def supported_color_modes(self) -> set[ColorMode]:
-        return {ColorMode.RGB}
 
     @property
     def rgb_color(self) -> tuple[int, int, int] | None:
