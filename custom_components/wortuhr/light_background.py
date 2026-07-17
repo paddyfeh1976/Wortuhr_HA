@@ -15,7 +15,7 @@ from homeassistant.const import CONF_HOST, STATE_ON
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.util.color import color_rgb_to_hex, color_hex_to_rgb
+from homeassistant.util.color import color_rgb_to_hex
 
 from .const import DOMAIN
 from .services import async_set_setting
