@@ -9,10 +9,10 @@ from homeassistant.components.light import (
     ColorMode, 
     ATTR_RGB_COLOR
 )
+from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, STATE_ON
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util.color import color_rgb_to_hex
@@ -43,7 +43,9 @@ class WortuhrBackgroundLight(LightEntity, RestoreEntity):
     _attr_has_entity_name = True
     _attr_name = "Hintergrund Farbe"
     _attr_icon = "mdi:palette"
-    _attr_supported_features = 0
+    
+    _attr_color_mode = ColorMode.RGB
+    _attr_supported_color_modes = {ColorMode.RGB}
 
     def __init__(
         self,
@@ -64,33 +66,19 @@ class WortuhrBackgroundLight(LightEntity, RestoreEntity):
         self._target_select_unique_id = f"wortuhr_background_option_{self._entry_id}"
 
     async def async_added_to_hass(self) -> None:
+        """Wird aufgerufen, wenn die Entität zu Home Assistant hinzugefügt wurde."""
         await super().async_added_to_hass()
-
-        try:
-            last_state = await self.async_get_last_state()
-        except Exception as err:
-            _LOGGER.debug("Konnte letzten Zustand für Hintergrundlicht nicht lesen: %s", err)
-            last_state = None
-
+        
+        last_state = await self.async_get_last_state()
         if last_state is not None:
-            self._is_on = last_state.state == STATE_ON
+            self._is_on = last_state.state == STATE_ON   
 
             if ATTR_RGB_COLOR in last_state.attributes:
-                rgb_value = last_state.attributes[ATTR_RGB_COLOR]
-                if isinstance(rgb_value, (list, tuple)) and len(rgb_value) == 3:
-                    self._rgb_color = tuple(int(v) for v in rgb_value)
+                self._rgb_color = tuple(last_state.attributes[ATTR_RGB_COLOR])
 
     @property
     def is_on(self) -> bool:
         return self._is_on
-
-    @property
-    def supported_color_modes(self) -> set[ColorMode]:
-        return {ColorMode.RGB}
-
-    @property
-    def color_mode(self) -> ColorMode:
-        return ColorMode.RGB if self._is_on else ColorMode.OFF
 
     @property
     def rgb_color(self) -> tuple[int, int, int] | None:
@@ -98,8 +86,6 @@ class WortuhrBackgroundLight(LightEntity, RestoreEntity):
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         self._is_on = True
-
-        kwargs.pop("brightness", None)
         
         # 1. Farbwahl verarbeiten und in Hex umrechnen
         if ATTR_RGB_COLOR in kwargs:
@@ -107,7 +93,7 @@ class WortuhrBackgroundLight(LightEntity, RestoreEntity):
         
         # Erzeuge den Hex-String (z.B. "#1a00bc") für die API
         hex_color = color_rgb_to_hex(self._rgb_color[0], self._rgb_color[1], self._rgb_color[2])
-        await async_set_setting(self.hass, self._host, "Bgc", "#" + hex_color.upper())
+        await async_set_setting(self.hass, self._host, "Bgc", hex_color.upper())
 
         # 2. Synchronisation: Wenn das Select auf "Aus" steht, schalte es auf "Immer"
         select_entity_id = async_get_entity_id_by_unique_id(

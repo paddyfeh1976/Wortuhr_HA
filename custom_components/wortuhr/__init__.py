@@ -52,16 +52,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         update_interval=timedelta(seconds=scan_interval),
     )
 
-    # Ersten Abruf triggern; bei Startproblemen nicht die komplette Integration abbrechen
-    try:
-        await coordinator.async_config_entry_first_refresh()
-    except Exception as err:
-        _LOGGER.warning(
-            "Erster API-Refresh fehlgeschlagen für %s: %s. Die Integration wird trotzdem geladen.",
-            host,
-            err,
-        )
-        coordinator.data = {}
+    # Ersten Abruf triggern
+    await coordinator.async_config_entry_first_refresh()
 
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = {
