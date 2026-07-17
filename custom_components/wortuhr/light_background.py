@@ -5,9 +5,9 @@ from typing import Any
 import logging
 
 from homeassistant.components.light import (
-    LightEntity, 
-    ColorMode, 
-    ATTR_RGB_COLOR
+    LightEntity,
+    ColorMode,
+    ATTR_XY_COLOR,
 )
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.config_entries import ConfigEntry
@@ -15,13 +15,14 @@ from homeassistant.const import CONF_HOST, STATE_ON
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.util.color import color_rgb_to_hex
+from homeassistant.util.color import color_rgb_to_hex, color_xy_to_rgb
 
 from .const import DOMAIN
 from .services import async_set_setting
 from .helpers import async_get_entity_id_by_unique_id
 
 _LOGGER = logging.getLogger(__name__)
+
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -44,8 +45,9 @@ class WortuhrBackgroundLight(LightEntity, RestoreEntity):
     _attr_name = "Hintergrund Farbe"
     _attr_icon = "mdi:palette"
     
-    _attr_color_mode = ColorMode.RGB
-    _attr_supported_color_modes = {ColorMode.RGB}
+
+    _attr_supported_color_modes = {ColorMode.XY}
+    _attr_color_mode = ColorMode.XY
 
     def __init__(
         self,
@@ -60,7 +62,7 @@ class WortuhrBackgroundLight(LightEntity, RestoreEntity):
         self._entry_id = config_entry.entry_id
         self._attr_unique_id = f"wortuhr_background_light_{self._entry_id}"
         self._is_on = True
-        self._rgb_color = (26, 0, 188)  # Entspricht dem alten Standard #1A00BC
+        self._xy_color = (0.13, 0.03)  # Entspricht dem alten Standard #1A00BC
         
         # Ziel-Verknüpfung zum Background-Option Select
         self._target_select_unique_id = f"wortuhr_background_option_{self._entry_id}"
@@ -71,29 +73,31 @@ class WortuhrBackgroundLight(LightEntity, RestoreEntity):
         
         last_state = await self.async_get_last_state()
         if last_state is not None:
-            self._is_on = last_state.state == STATE_ON   
+            self._is_on = last_state.state == STATE_ON
 
-            if ATTR_RGB_COLOR in last_state.attributes:
-                self._rgb_color = tuple(last_state.attributes[ATTR_RGB_COLOR])
+            xy = last_state.attributes.get(ATTR_XY_COLOR)
+            if xy:
+                self._xy_color = tuple(xy)
 
     @property
     def is_on(self) -> bool:
         return self._is_on
 
     @property
-    def rgb_color(self) -> tuple[int, int, int] | None:
-        return self._rgb_color
+    def xy_color(self) -> tuple[float, float] | None:
+        return self._xy_color
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         self._is_on = True
         
         # 1. Farbwahl verarbeiten und in Hex umrechnen
-        if ATTR_RGB_COLOR in kwargs:
-            self._rgb_color = kwargs[ATTR_RGB_COLOR]
-        
-        # Erzeuge den Hex-String (z.B. "#1a00bc") für die API
-        hex_color = color_rgb_to_hex(self._rgb_color[0], self._rgb_color[1], self._rgb_color[2])
-        await async_set_setting(self.hass, self._host, "Bgc", "#" + hex_color.upper())
+        if ATTR_XY_COLOR in kwargs:
+            self._xy_color = kwargs[ATTR_XY_COLOR]
+
+        # Erzeuge den Hex-String (z.B. "#1A00BC") für die API
+        r, g, b = color_xy_to_rgb(*self._xy_color)
+        hex_color = color_rgb_to_hex(r, g, b).upper()
+        await async_set_setting(self.hass, self._host, "Bgc", "#" + hex_color)
 
         # 2. Synchronisation: Wenn das Select auf "Aus" steht, schalte es auf "Immer"
         select_entity_id = async_get_entity_id_by_unique_id(
