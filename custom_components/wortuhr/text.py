@@ -31,7 +31,6 @@ async def async_setup_entry(
     async_add_entities(
         [
             WortuhrMessageText(hass, config_entry, device_info, host),
-            WortuhrBackgroundColorPicker(hass, config_entry, device_info, host),
         ]
     )
 
