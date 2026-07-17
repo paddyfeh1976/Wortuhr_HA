@@ -15,7 +15,7 @@ from homeassistant.const import CONF_HOST, STATE_ON
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.util.color import color_rgb_to_hex, color_xy_to_rgb
+from homeassistant.util.color import color_rgb_to_hex, color_xy_to_RGB
 
 from .const import DOMAIN
 from .services import async_set_setting
@@ -95,7 +95,7 @@ class WortuhrBackgroundLight(LightEntity, RestoreEntity):
             self._xy_color = kwargs[ATTR_XY_COLOR]
 
         # Erzeuge den Hex-String (z.B. "#1A00BC") für die API
-        r, g, b = color_xy_to_rgb(*self._xy_color)
+        r, g, b = color_xy_to_RGB(*self._xy_color)
         hex_color = color_rgb_to_hex(r, g, b).upper()
         await async_set_setting(self.hass, self._host, "Bgc", "#" + hex_color)
 
