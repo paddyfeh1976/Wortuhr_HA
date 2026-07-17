@@ -43,7 +43,8 @@ class WortuhrBackgroundLight(LightEntity, RestoreEntity):
     _attr_has_entity_name = True
     _attr_name = "Hintergrund Farbe"
     _attr_icon = "mdi:palette"
-    
+    _attr_supported_features = 0
+
     _attr_color_mode = ColorMode.RGB
     _attr_supported_color_modes = {ColorMode.RGB}
 
@@ -81,11 +82,21 @@ class WortuhrBackgroundLight(LightEntity, RestoreEntity):
         return self._is_on
 
     @property
+    def color_mode(self) -> ColorMode:
+        return ColorMode.RGB if self._is_on else ColorMode.OFF
+
+    @property
+    def supported_color_modes(self) -> set[ColorMode]:
+        return {ColorMode.RGB}
+
+    @property
     def rgb_color(self) -> tuple[int, int, int] | None:
         return self._rgb_color
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         self._is_on = True
+
+        kwargs.pop("brightness", None)
         
         # 1. Farbwahl verarbeiten und in Hex umrechnen
         if ATTR_RGB_COLOR in kwargs:
@@ -93,7 +104,7 @@ class WortuhrBackgroundLight(LightEntity, RestoreEntity):
         
         # Erzeuge den Hex-String (z.B. "#1a00bc") für die API
         hex_color = color_rgb_to_hex(self._rgb_color[0], self._rgb_color[1], self._rgb_color[2])
-        await async_set_setting(self.hass, self._host, "Bgc", hex_color.upper())
+        await async_set_setting(self.hass, self._host, "Bgc", "#" + hex_color.upper())
 
         # 2. Synchronisation: Wenn das Select auf "Aus" steht, schalte es auf "Immer"
         select_entity_id = async_get_entity_id_by_unique_id(
