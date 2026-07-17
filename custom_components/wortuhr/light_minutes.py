@@ -5,8 +5,8 @@ from typing import Any
 import logging
 
 from homeassistant.components.light import (
-    LightEntity, 
-    ColorMode, 
+    LightEntity,
+    ColorMode,
     ATTR_RGB_COLOR
 )
 from homeassistant.helpers.restore_state import RestoreEntity
@@ -72,7 +72,7 @@ class WortuhrMinutesLight(LightEntity, RestoreEntity):
         # 1. Letzten Status wiederherstellen (falls verfügbar)
         last_state = await self.async_get_last_state()
         if last_state is not None:
-            self._is_on = last_state.state == STATE_ON   
+            self._is_on = last_state.state == STATE_ON
 
             # NUR RGB abfragen – KEIN _brightness und KEIN _effect mehr hier!
             if ATTR_RGB_COLOR in last_state.attributes:
