@@ -44,8 +44,6 @@ class WortuhrBackgroundLight(LightEntity, RestoreEntity):
     _attr_name = "Hintergrund Farbe"
     _attr_icon = "mdi:palette"
     _attr_supported_features = 0
-    _attr_color_mode = ColorMode.RGB
-    _attr_supported_color_modes = {ColorMode.RGB}
 
     def __init__(
         self,
@@ -68,7 +66,12 @@ class WortuhrBackgroundLight(LightEntity, RestoreEntity):
     async def async_added_to_hass(self) -> None:
         await super().async_added_to_hass()
 
-        last_state = await self.async_get_last_state()
+        try:
+            last_state = await self.async_get_last_state()
+        except Exception as err:
+            _LOGGER.debug("Konnte letzten Zustand für Hintergrundlicht nicht lesen: %s", err)
+            last_state = None
+
         if last_state is not None:
             self._is_on = last_state.state == STATE_ON
 
@@ -80,6 +83,14 @@ class WortuhrBackgroundLight(LightEntity, RestoreEntity):
     @property
     def is_on(self) -> bool:
         return self._is_on
+
+    @property
+    def supported_color_modes(self) -> set[ColorMode]:
+        return {ColorMode.RGB}
+
+    @property
+    def color_mode(self) -> ColorMode:
+        return ColorMode.RGB if self._is_on else ColorMode.OFF
 
     @property
     def rgb_color(self) -> tuple[int, int, int] | None:
