@@ -5,13 +5,14 @@ from __future__ import annotations
 from homeassistant.components.select import SelectEntity
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_HOST, EntityCategory
+from homeassistant.const import CONF_HOST, EntityCategory, STATE_ON, STATE_OFF
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN, MINUTE_LED_CHANGE_OPTIONS
 from .services import async_set_setting
+from .helpers import async_get_entity_id_by_unique_id
 
 
 async def async_setup_entry(
@@ -49,8 +50,10 @@ class WortuhrMinuteLedChangeSelect(SelectEntity, RestoreEntity):
         self.hass = hass
         self.config_entry = config_entry
         self._attr_device_info = device_info
+        self._entry_id = config_entry.entry_id
         self._host = host
         self._attr_unique_id = f"wortuhr_minute_led_change_select_{config_entry.entry_id}"
+        self._target_minutes_unique_id = f"wortuhr_minutes_{self._entry_id}"
 
     async def async_added_to_hass(self) -> None:
         """Wird aufgerufen, wenn die Entität zu Home Assistant hinzugefügt wurde."""
@@ -83,3 +86,29 @@ class WortuhrMinuteLedChangeSelect(SelectEntity, RestoreEntity):
         )
         self._current_option = option
         self.async_write_ha_state()
+
+        light_entity_id = async_get_entity_id_by_unique_id(
+            self.hass, "light", self._target_minutes_unique_id
+        )
+        if not light_entity_id:
+            return
+
+        # 2. UI-Synchronisation mit der Licht-Entität
+        if option == "Wie Hauptfarbe":
+            light_state = self.hass.states.get(light_entity_id)
+            if light_state and light_state.state == STATE_ON:
+                await self.hass.services.async_call(
+                    "light",
+                    "turn_off",
+                    {"entity_id": light_entity_id},
+                    blocking=False,
+                )
+        else:
+            light_state = self.hass.states.get(light_entity_id)
+            if light_state and light_state.state == STATE_OFF:
+                await self.hass.services.async_call(
+                    "light",
+                    "turn_on",
+                    {"entity_id": light_entity_id},
+                    blocking=False,
+                )        

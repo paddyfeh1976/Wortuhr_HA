@@ -19,6 +19,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .const import DOMAIN
 from .services import async_set_setting
 from .color_mapper import WortuhrColorMapper
+from .helpers import async_get_entity_id_by_unique_id
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -61,6 +62,7 @@ class WortuhrMinutesLight(LightEntity, RestoreEntity):
         self._is_on = True
         self._rgb_color = (255, 255, 255)
         self._color_name = "Weiß"
+        self._target_select_unique_id = f"wortuhr_minute_led_change_select_{self._entry_id}"
 
     async def async_added_to_hass(self) -> None:
         """Wird aufgerufen, wenn die Entität zu Home Assistant hinzugefügt wurde."""
@@ -90,6 +92,20 @@ class WortuhrMinutesLight(LightEntity, RestoreEntity):
         
         # Schaltet die Minuten-LEDs grundsätzlich ein (Zustand 0 laut deiner Logik)
         await async_set_setting(self.hass, self._host, "ccc", 0)
+
+        # Hole dynamisch die echte Entity ID des Selects (falls umbenannt)
+        select_entity_id = async_get_entity_id_by_unique_id(
+            self.hass, "select", self._target_select_unique_id
+        )
+        if select_entity_id:
+            select_state = self.hass.states.get(select_entity_id)
+            if select_state and select_state.state == "Wie Hauptfarbe":
+                await self.hass.services.async_call(
+                    "select",
+                    "select_option",
+                    {"entity_id": select_entity_id, "option": "Aus"},
+                    blocking=False,
+                )
         
         # Farbwahl verarbeiten
         if ATTR_RGB_COLOR in kwargs:
@@ -116,4 +132,19 @@ class WortuhrMinutesLight(LightEntity, RestoreEntity):
     async def async_turn_off(self, **kwargs: Any) -> None:
         await async_set_setting(self.hass, self._host, "ccc", 4)
         self._is_on = False
+
+        select_entity_id = async_get_entity_id_by_unique_id(
+            self.hass, "select", self._target_select_unique_id
+        )
+        if select_entity_id:
+            select_state = self.hass.states.get(select_entity_id)
+            # Wenn das Select noch nicht auf "Wie Hauptfarbe" steht, setzen wir es jetzt darauf
+            if select_state and select_state.state != "Wie Hauptfarbe":
+                await self.hass.services.async_call(
+                    "select",
+                    "select_option",
+                    {"entity_id": select_entity_id, "option": "Wie Hauptfarbe"},
+                    blocking=False,
+                )
+
         self.async_write_ha_state()

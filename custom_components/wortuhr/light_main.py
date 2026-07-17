@@ -18,11 +18,11 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util.color import brightness_to_value
-from homeassistant.helpers import entity_registry as er
 
 from .const import DOMAIN, MODE_OPTIONS
 from .services import async_set_mode, async_set_setting
 from .color_mapper import WortuhrColorMapper
+from .helpers import async_get_entity_id_by_unique_id
 
 import logging
 
@@ -44,7 +44,7 @@ async def async_setup_entry(
         model="HTTP API",
         configuration_url=f"http://{host}",
     )
-    async_add_entities([WortuhrMainLight(hass, config_entry, device_info, host, config_entry.entry_id)])
+    async_add_entities([WortuhrMainLight(hass, config_entry, device_info, host)])
 
 class WortuhrMainLight(LightEntity, RestoreEntity):
     _attr_has_entity_name = True
@@ -161,12 +161,8 @@ class WortuhrMainLight(LightEntity, RestoreEntity):
             # Sendet den Farb-Index an die Uhr via commitSettings
             await async_set_setting(self.hass, self._host, "co", color_id)
 
-            # Wir holen uns die Entity Registry von Home Assistant
-            entity_registry = er.async_get(self.hass)
-            
-            # Wir suchen die aktuelle Entity ID anhand der unveränderlichen Unique ID der Minuten
-            minutes_entry = entity_registry.async_get_entity_id(
-                "light", DOMAIN, self._target_minutes_unique_id
+            minutes_entry = async_get_entity_id_by_unique_id(
+                self.hass, "light", self._target_minutes_unique_id
             )
 
             if minutes_entry:
