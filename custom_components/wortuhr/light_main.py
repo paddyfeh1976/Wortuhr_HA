@@ -20,7 +20,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util.color import brightness_to_value
 
 from .const import DOMAIN, MODE_OPTIONS
-from .services import async_set_mode, async_set_setting
+from .services import async_set_mode, async_set_setting, async_set_settings
 from .color_mapper import WortuhrColorMapper
 from .helpers import async_get_entity_id_by_unique_id
 
@@ -200,7 +200,18 @@ class WortuhrMainLight(LightEntity, RestoreEntity):
         )
 
         # Sendet die Helligkeit an das Gerät
-        await async_set_setting(self.hass, self._host, "br", pct_val)
+        await async_set_settings(self.hass, self._host, {"ab": 0, "br": pct_val})
+
+        # A manual brightness change disables automatic brightness in the firmware.
+        auto_entity = async_get_entity_id_by_unique_id(
+            self.hass, "switch", f"wortuhr_auto_brightness_{self._entry_id}"
+        )
+        if auto_entity:
+            auto_state = self.hass.states.get(auto_entity)
+            if auto_state is not None and auto_state.state == STATE_ON:
+                await self.hass.services.async_call(
+                    "switch", "turn_off", {"entity_id": auto_entity}, blocking=True
+                )
 
         self.async_write_ha_state()
 
