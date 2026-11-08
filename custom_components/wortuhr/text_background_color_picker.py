@@ -9,7 +9,7 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
-from .services import async_set_setting
+from .services import async_set_background_color
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -53,6 +53,6 @@ class WortuhrBackgroundColorPicker(TextEntity):
         # Falls der Picker den Wert ohne '#' liefert, fügen wir es an
         formatted_color = value if value.startswith("#") else f"#{value}"
         
-        await async_set_setting(self.hass, self._host, "Bgc", formatted_color)
+        await async_set_background_color(self.hass, self._host, formatted_color)
         self._value = formatted_color
         self.async_write_ha_state()
