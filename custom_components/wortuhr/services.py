@@ -129,6 +129,21 @@ async def async_set_setting(
     return await request(hass, url)
 
 
+async def async_set_settings(hass: HomeAssistant, host: str, params: dict) -> str:
+    """Apply several settings in a single HTTP request."""
+    return await request(hass, _build_url(host, "commitSettings", params))
+
+
+async def async_set_background_color(hass: HomeAssistant, host: str, color: str) -> str:
+    """Set the background color through the dedicated firmware endpoint."""
+    normalized = color.lstrip("#").upper()
+    if len(normalized) != 6 or any(c not in "0123456789ABCDEF" for c in normalized):
+        raise ValueError("Background color must be a six-digit RGB hex value")
+    return await request(
+        hass, _build_url(host, "BackgroundColor", {"bgcolor": normalized})
+    )
+
+
 async def async_reboot(hass: HomeAssistant, host: str) -> str:
     return await request(hass, f"http://{host}/reboot")
 
