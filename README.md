@@ -369,3 +369,10 @@ automation:
 ## Lizenz
 
 MIT License
+
+
+### Firmware API notes: brightness and background color
+
+For the tested firmware, setting `br` alone via `/commitSettings` stores the value but does not immediately update LED brightness. A manual brightness change must send `ab=0` together with `br`, e.g. `/commitSettings?ab=0&br=30`. This disables automatic brightness.
+
+For immediate background color changes, use `/BackgroundColor?bgcolor=008000` (six-digit RGB hex without `#`). The former `Bgc` parameter does not work. The tested alternative `/commitSettings?bgce=2&bgc=%23008000` also applies the color, but changes the background mode to **Immer**, so the integration uses the dedicated endpoint instead.
